@@ -2,7 +2,9 @@
 
 
    ext.sendall = function(op_code, callback){
+      console.log("call start");
       if(0 <= raw_bye && op_code <= 255){
+         console.log("ajax start");
             $.ajax({
                     url: 'localhost:8080',
                     data: {byte: op_code},
@@ -15,6 +17,10 @@
                      console.log(tStatus);
                      console.log(error);
                      callback("ERROR");
+                    },
+                    complete: function(xhr, tStatus){
+                       console.log(tStatus);
+                       callback("COMPLETE");
                     }
                     
                     }
