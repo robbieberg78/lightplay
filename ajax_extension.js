@@ -1,13 +1,13 @@
 (function(ext) {
 
 
-   ext.sendall = function(op_code, callback){
+   ext.sendall = function(channel, action, callback){
       console.log("call start");
-      if(0 <= op_code && op_code <= 255){
+      if(0 <= channel && channel <= 9){
          console.log("ajax start");
             $.ajax({
                     url: 'http://localhost:8080',
-                    data: {byte: op_code},
+                    data: {channel: channel, action: action },
                     success: function(data,tStatus,xhr) {
                      console.log(data);
                      console.log(tStatus);
@@ -25,7 +25,6 @@
                     
                     }
                   );
-                  
          }
    };
 
@@ -40,12 +39,15 @@
 
    var descriptor = {
            blocks: [
-                   ['R', 'send byte: %n', 'sendall', 0x00],
+                   ['R', 'Turn channel %n %m.action', 'sendall', 1, On],
                    ['R', 'Test: %n', 'test', 0x00],
                    ['R', 'recv byte', 'recv']
                    ],
 
-           url: 'https://github.com/bsb20/scratch-to-serial/tree/gh-pages'
+           url: 'https://github.com/bsb20/scratch-to-serial/tree/gh-pages',
+           menus: {
+               action: ['On', 'Off']
+           }
    };
 
    // Register the extension
