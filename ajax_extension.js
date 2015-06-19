@@ -2,7 +2,7 @@
 
 
    ext.sendall = function(op_code){
-      if(0 <= raw_bye && op_code <= 255){
+      if(0 <= op_code && op_code <= 255){
             $.ajax({
                     url: 'localhost:8080',
                     data: {byte: op_code},
