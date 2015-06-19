@@ -64,7 +64,7 @@
            }
    };
 
-   // Register the extension
+   // Register the extension..
    ScratchExtensions.register('Sample extension', descriptor, ext);
 })({});
 
