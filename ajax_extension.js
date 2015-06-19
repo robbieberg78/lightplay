@@ -23,9 +23,9 @@
          }
    };
 
-   ext.test = function(arg){
+   ext.test = function(arg, callback){
       
-      return "TEST";
+      callback(arg);
    };
 
    ext.recv = function(callback){
@@ -35,7 +35,7 @@
    var descriptor = {
            blocks: [
                    ['R', 'send byte: %n', 'sendall', 0x00],
-                   ['r', 'Test: %n', 'test', 0x00],
+                   ['R', 'Test: %n', 'test', 0x00],
                    ['R', 'recv byte', 'recv']
                    ],
 
