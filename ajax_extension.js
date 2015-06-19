@@ -53,7 +53,7 @@
 
    var descriptor = {
            blocks: [
-                   ['R', 'Turn  %n %m.action', 'sendall', 1, 'On'],
+                   ['w', 'Turn  %n %m.action', 'sendall', 1, 'On'],
                    ['R', 'Test: %n', 'test', 0x00],
                    ['R', 'Wait until sensor %n fires', 'register']
                    ],

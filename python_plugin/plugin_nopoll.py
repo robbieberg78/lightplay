@@ -64,6 +64,7 @@ class ArduinoHTTPServer(HTTPServer, ThreadingMixIn):
       self._arduino = arduino
       self.actions = {"On": arduino.on, "Off": arduino.off, "Register": arduino.register}
       HTTPServer.__init__(self, *args, **kwargs)
+
  
 
 if __name__ == "__main__":
