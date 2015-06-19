@@ -34,7 +34,6 @@
    };
 
    ext.register = function(channel, callback){
-           callback("data");
            $.ajax({
                     url: 'http://localhost:8080',
                     data: {channel: channel, action: 'Register' },
@@ -47,7 +46,8 @@
                      console.log(tStatus);
                      console.log(error);
                      callback("ERROR");
-                    },
+                    }
+               });
              
    };
 
