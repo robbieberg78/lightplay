@@ -39,7 +39,7 @@
 
    var descriptor = {
            blocks: [
-                   ['R', 'Turn channel %n %m.action', 'sendall', 1, On],
+                   ['R', 'Turn channel %n %m.action', 'sendall', 1, 'On'],
                    ['R', 'Test: %n', 'test', 0x00],
                    ['R', 'recv byte', 'recv']
                    ],
