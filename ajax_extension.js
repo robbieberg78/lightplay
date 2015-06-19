@@ -7,6 +7,7 @@
                     url: 'localhost:8080',
                     data: {byte: op_code},
                     success: function(data, text, obj) {alert(text); }
+                  );
                   }
             return true;
          }
