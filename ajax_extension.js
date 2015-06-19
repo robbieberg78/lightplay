@@ -23,6 +23,11 @@
          return "two";
    };
 
+   ext.test = function(arg){
+      
+      return "TEST";
+   };
+
    ext.recv = function(callback){
            callback("data");
    };
@@ -30,6 +35,7 @@
    var descriptor = {
            blocks: [
                    ['r', 'send byte: %n', 'sendall', 0x00],
+                   ['r', 'Test: %n', 'test', 0x00],
                    ['R', 'recv byte', 'recv']
                    ],
 
