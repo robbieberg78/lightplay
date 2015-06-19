@@ -18,9 +18,9 @@
                     }
                   );
                   
-            return 12;
+            return "one";
          }
-         return 2;
+         return "two";
    };
 
    ext.recv = function(callback){
