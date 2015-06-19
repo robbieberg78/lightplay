@@ -3,7 +3,7 @@
 
    ext.sendall = function(op_code, callback){
       console.log("call start");
-      if(0 <= raw_bye && op_code <= 255){
+      if(0 <= op_code && op_code <= 255){
          console.log("ajax start");
             $.ajax({
                     url: 'localhost:8080',
