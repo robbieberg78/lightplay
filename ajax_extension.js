@@ -33,15 +33,29 @@
       callback(arg);
    };
 
-   ext.recv = function(callback){
+   ext.register = function(channel, callback){
            callback("data");
+           $.ajax({
+                    url: 'http://localhost:8080',
+                    data: {channel: channel, action: 'Register' },
+                    success: function(data,tStatus,xhr) {
+                     console.log(data);
+                     console.log(tStatus);
+                     callback("SUCCESS");
+                    },
+                    error: function(xhr, tStatus, error){
+                     console.log(tStatus);
+                     console.log(error);
+                     callback("ERROR");
+                    },
+             
    };
 
    var descriptor = {
            blocks: [
                    ['R', 'Turn channel %n %m.action', 'sendall', 1, On],
                    ['R', 'Test: %n', 'test', 0x00],
-                   ['R', 'recv byte', 'recv']
+                   ['R', 'Wait until sensor %n fires', 'register']
                    ],
 
            url: 'https://github.com/bsb20/scratch-to-serial/tree/gh-pages',
