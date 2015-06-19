@@ -6,7 +6,15 @@
             $.ajax({
                     url: 'localhost:8080',
                     data: {byte: op_code},
-                    success: function(data, text, obj) {alert(text); }
+                    success: function(data,tStatus,xhr) {
+                     console.log(data);
+                     console.log(tStatus);
+                    }
+                    error: function(xhr, tStatus, error){
+                     console.log(tStatus);
+                     console.log(error);
+                    }
+                    
                     }
                   );
                   
