@@ -18,9 +18,9 @@
                     }
                   );
                   
-            return true;
+            return 12;
          }
-         return false;
+         return 2;
    };
 
    ext.recv = function(callback){
