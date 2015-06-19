@@ -1,7 +1,7 @@
 (function(ext) {
 
 
-   ext.sendall = function(op_code){
+   ext.sendall = function(op_code, callback){
       if(0 <= raw_bye && op_code <= 255){
             $.ajax({
                     url: 'localhost:8080',
@@ -9,18 +9,18 @@
                     success: function(data,tStatus,xhr) {
                      console.log(data);
                      console.log(tStatus);
+                     callback("SUCCESS");
                     },
                     error: function(xhr, tStatus, error){
                      console.log(tStatus);
                      console.log(error);
+                     callback("ERROR");
                     }
                     
                     }
                   );
                   
-            return "one";
          }
-         return "two";
    };
 
    ext.test = function(arg){
@@ -34,7 +34,7 @@
 
    var descriptor = {
            blocks: [
-                   ['r', 'send byte: %n', 'sendall', 0x00],
+                   ['R', 'send byte: %n', 'sendall', 0x00],
                    ['r', 'Test: %n', 'test', 0x00],
                    ['R', 'recv byte', 'recv']
                    ],
