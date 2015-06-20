@@ -12,17 +12,17 @@ class LightPlayer(object):
    QUERY = 8
 
    def __init__(self):
-      self._sensors = {}
+     self._sensors = {}
 
    def write(self, payload):
-      raise NotImplementedError
+     raise NotImplementedError
 
    def read(self, length, timeout=0):
       raise NotImplementedError
 
    def validChannel(self, channel):
       return 0 <= channel <= 15
- 
+
    def addSensor(self, cls, channel):
       if not self.validChannel(channel):
          raise ValueError("Sensor must be bound to a valid channel")
@@ -32,7 +32,7 @@ class LightPlayer(object):
       if not self.validChannel(channel) or channel not in self._sensors:
          raise ValueError("Must register behavior to a valid sensor.  Tried {0}, available {1}".format(channel, str(self._sensors.keys())))
       return self._sensors[channel].register(target, *args, **kwargs)
-      
+ 
    def poll(self, channel=None):
       if channel is not None:
          if not self.validChannel(channel):
@@ -86,6 +86,7 @@ class SerialLightPlayer(LightPlayer):
          self._transport.timeout = timeout
       return self._transport.read(length)
 
+
 class TestLightPlayer(LightPlayer):
 
    def __init__(self):
@@ -94,17 +95,21 @@ class TestLightPlayer(LightPlayer):
       LightPlayer.__init__(self)
 
    def write(self, payload):
-      print "channel", ord(payload) >> 4, "got message", ord(payload) % (1 << 4)
+      channel = ord(payload) >> 4
+      op_code = ord(payload) % (1 << 4)
+      print "channel", channel, "got message", op_code
       print
-      response = raw_input("response > ")
-      if response:
-         self._read_queue.put(self._responses[response])
+      if op_code == LightPlayer.QUERY:
+         response = raw_input("response to query on channel {0}> ".format(channel))
+         if response:
+            self._read_queue.put(self._responses[response])
 
    def read(self, length, timeout=0):
       payload = ""
       try:
-         for i in range(length):
+         while length > 0:
             payload += chr(int(self._read_queue.get()))
+            length -= 1
       finally:
          return payload
 
