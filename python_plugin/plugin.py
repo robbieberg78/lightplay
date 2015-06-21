@@ -69,7 +69,7 @@ class ArduinoHTTPServer(HTTPServer, ThreadingMixIn):
 if __name__ == "__main__":
 #   run_sensors()
     arduino = run_test_arduino()
-    server = ArduinoHTTPServer(arduino, ("localhost", 8080), ArduinoHTTPRequestHandler)
+    server = ArduinoHTTPServer(arduino, ("localhost", 8000), ArduinoHTTPRequestHandler)
     t = threading.Thread(target=server.serve_forever)
     t.daemon = True
     t.start()
