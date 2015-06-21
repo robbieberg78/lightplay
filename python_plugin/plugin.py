@@ -43,7 +43,6 @@ class ArduinoHTTPRequestHandler(BaseHTTPRequestHandler):
       BaseHTTPRequestHandler.__init__(self, *args, **kwargs)
 
    def do_GET(self):
-      print "HELLO SERVER!"
       self.send_response(200)
       self.send_header('Access-Control-Allow-Origin', '*')
       self.send_header('Content-type', 'text/html')
