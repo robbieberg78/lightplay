@@ -43,6 +43,7 @@ class ArduinoHTTPRequestHandler(BaseHTTPRequestHandler):
       BaseHTTPRequestHandler.__init__(self, *args, **kwargs)
 
    def do_GET(self):
+      print "HELLO SERVER!"
       self.send_response(200)
       self.send_header('Access-Control-Allow-Origin', '*')
       self.send_header('Content-type', 'text/html')
@@ -69,7 +70,7 @@ class ArduinoHTTPServer(HTTPServer, ThreadingMixIn):
 if __name__ == "__main__":
 #   run_sensors()
     arduino = run_test_arduino()
-    server = ArduinoHTTPServer(arduino, ("localhost", 8080), ArduinoHTTPRequestHandler)
+    server = ArduinoHTTPServer(arduino, ("localhost", 8000), ArduinoHTTPRequestHandler)
     t = threading.Thread(target=server.serve_forever)
     t.daemon = True
     t.start()

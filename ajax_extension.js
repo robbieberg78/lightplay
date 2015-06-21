@@ -6,7 +6,7 @@
       if(0 <= channel && channel <= 9){
          console.log("ajax start");
             $.ajax({
-                    url: 'http://localhost:8080',
+                    url: 'http://localhost:8000',
                     data: {channel: channel, action: action },
                     success: function(data,tStatus,xhr) {
                      console.log(data);
@@ -35,7 +35,7 @@
 
    ext.register = function(channel, callback){
            $.ajax({
-                    url: 'http://localhost:8080',
+                    url: 'http://localhost:8000',
                     data: {channel: channel, action: 'Register' },
                     success: function(data,tStatus,xhr) {
                      console.log(data);
