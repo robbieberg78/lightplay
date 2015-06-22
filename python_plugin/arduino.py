@@ -4,6 +4,7 @@ import time
 from datetime import datetime, timedelta
 from Queue import Queue
 
+
 class LightPlayer(object):
 
    OFF = 0
@@ -12,10 +13,10 @@ class LightPlayer(object):
    QUERY = 8
 
    def __init__(self):
-     self._sensors = {}
+      self._sensors = {}
 
    def write(self, payload):
-     raise NotImplementedError
+      raise NotImplementedError
 
    def read(self, length, timeout=0):
       raise NotImplementedError
@@ -30,9 +31,10 @@ class LightPlayer(object):
 
    def register(self, channel, target, *args, **kwargs):
       if not self.validChannel(channel) or channel not in self._sensors:
-         raise ValueError("Must register behavior to a valid sensor.  Tried {0}, available {1}".format(channel, str(self._sensors.keys())))
+         raise ValueError("Must register behavior to a valid sensor.  Tried {0}, available {1}".format(
+             channel, str(self._sensors.keys())))
       return self._sensors[channel].register(target, *args, **kwargs)
- 
+
    def poll(self, channel=None):
       if channel is not None:
          if not self.validChannel(channel):
@@ -44,11 +46,13 @@ class LightPlayer(object):
             sensor.poll()
 
    def _compileMessage(self, channel, action):
-      #  This makes it a little clearer what you're trying to accomplish probably...
+      # This makes it a little clearer what you're trying to accomplish
+      # probably...
       if action >= (1 << 4) or action < 0:
          raise ValueError("Action overflow: action={0}".format(action))
       if not self.validChannel(channel):
-         raise ValueError("Valid channel required: channel={0}".format(channel))
+         raise ValueError(
+             "Valid channel required: channel={0}".format(channel))
       return chr((channel << 4) | action)
 
    def wait(self, seconds):
@@ -58,7 +62,7 @@ class LightPlayer(object):
 
    def query(self, channel):
       self.write(self._compileMessage(channel, LightPlayer.QUERY))
-      return ord(self.read(1)) == LightPlayer.ON 
+      return ord(self.read(1)) == LightPlayer.ON
 
    def on(self, channel):
       return self.write(self._compileMessage(channel, LightPlayer.ON))
@@ -74,7 +78,7 @@ class SerialLightPlayer(LightPlayer):
 
    def __init__(self, port, baudrate):
       self._transport = serial.Serial(port=port, baudrate=baudrate)
-      #you should handshake here rather than just waiting...
+      # you should handshake here rather than just waiting...
       time.sleep(5)
       LightPlayer.__init__(self)
 
@@ -100,7 +104,8 @@ class TestLightPlayer(LightPlayer):
       print "channel", channel, "got message", op_code
       print
       if op_code == LightPlayer.QUERY:
-         response = raw_input("response to query on channel {0}> ".format(channel))
+         response = raw_input(
+             "response to query on channel {0}> ".format(channel))
          if response:
             self._read_queue.put(self._responses[response])
 
@@ -116,8 +121,11 @@ class TestLightPlayer(LightPlayer):
 
 class WifiLightPlayer(LightPlayer):
    pass
-   #specify correct transport, expose proper options in __init__
-   #def __init__(self, ip, port):
-   #   pass
+  # specify correct transport, expose proper options in __init__
+  # def __init__(self, ip, port):
+  #   pass
 
-   #SEE!  now you can do all the TCP partial read/ partial write handling in the transport specific read/write methods which are, as of yet, not implemented
+  # SEE!  now you can do all the TCP partial read/ partial write handling in
+  # the transport specific read/write methods which are, as of yet, not
+  # implemented
+
