@@ -62,7 +62,8 @@ class LightPlayer(object):
 
    def query(self, channel):
       self.write(self._compileMessage(channel, LightPlayer.QUERY))
-      return ord(self.read(1)) == LightPlayer.ON
+      result = self.read(1)
+      return ord(result) if result else None
 
    def on(self, channel):
       return self.write(self._compileMessage(channel, LightPlayer.ON))

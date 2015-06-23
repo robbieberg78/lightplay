@@ -3,15 +3,18 @@ import argparse
 import threading
 import sensor
 import time
-from arduino import TestLightPlayer
+from arduino import TestLightPlayer, SerialLightPlayer
 from SocketServer import ThreadingMixIn
 from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
 from urlparse import parse_qs
+import time
 
 
 def run_test_arduino():
-   arduino = TestLightPlayer()
+   #   arduino = TestLightPlayer()
+   arduino = SerialLightPlayer("/dev/tty.usbmodem1411", 9600)
    arduino.addSensor(sensor.ArduinoEdgeTriggeredSensor, 8)
+   arduino.register(8, test_function, "foo", "bar")
    return arduino
 
 
@@ -33,12 +36,11 @@ def run_sensors():
          s.poll()
 
 
-def test_function(msg1, arduino,  msg2):
+def test_function(msg1, msg2):
    print msg1
    # prove to me we're on a separate thread by not blocking the main thread while sleeping
    # arduino.reverse(9)
    time.sleep(2)
-   arduino.reverse(9)
    print msg2
 
 
@@ -85,5 +87,7 @@ if __name__ == "__main__":
    t = threading.Thread(target=server.serve_forever)
    t.daemon = True
    t.start()
-   arduino.poll()
+   while True:
+      arduino.poll()
+      time.sleep(.005)
 
