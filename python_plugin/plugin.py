@@ -3,6 +3,7 @@ import argparse
 import threading
 import sensor
 import time
+import glob
 from arduino import TestLightPlayer, SerialLightPlayer
 from SocketServer import ThreadingMixIn
 from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
@@ -10,9 +11,9 @@ from urlparse import parse_qs
 import time
 
 
-def run_test_arduino():
+def run_test_arduino(args):
    #   arduino = TestLightPlayer()
-   arduino = SerialLightPlayer("/dev/tty.usbmodem1411", 9600)
+   arduino = SerialLightPlayer(args.serial_port, args.baudrate)
    arduino.addSensor(sensor.ArduinoEdgeTriggeredSensor, 8)
    arduino.register(8, test_function, "foo", "bar")
    return arduino
@@ -80,8 +81,22 @@ if __name__ == "__main__":
    parser = argparse.ArgumentParser()
    parser.add_argument('--port', '-p', type=int, default=8000)
    parser.add_argument('--ip', '-i', default='localhost')
+   parser.add_argument('--serial-port', '-s', dest="serial_port")
+   parser.add_argument('--baudrate', '-b', type=int, default=9600)
    args = parser.parse_args()
-   arduino = run_test_arduino()
+   if not args.serial_port:
+      # look for valid serial devices, if more than one is available, choose
+      # one but notify the user
+      serial_list = glob.glob("/dev/tty.usbmodem*")
+      if serial_list:
+         args.serial_port = serial_list[0]
+         if len(serial_list) > 1:
+            print "from available devices {0}, selected {1}.  Run with --serial-port to specify another device.".format(serial_list, args.serial_port)
+      else:
+         raise RuntimeError(
+             "Failed to detect connected serial devices.  If one is available, specify with --serial-port")
+
+   arduino = run_test_arduino(args)
    server = ArduinoHTTPServer(
        arduino, (args.ip, args.port), ArduinoHTTPRequestHandler)
    t = threading.Thread(target=server.serve_forever)
