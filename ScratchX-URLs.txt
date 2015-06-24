@@ -15,3 +15,7 @@ http://scratchx.org/?url=http://robbieberg78.github.io/lightplay/picoExtension.j
 
 http://scratchx.org/?url=http://robbieberg78.github.io/lightplay/ajax_extension.js
 
+http://scratchx.org/?url=http://robbieberg78.github.io/lightplay/testblocks.js
+
+http://scratchx.org/?url=http://robbieberg78.github.io/lightplay/CommandWait.js
+
