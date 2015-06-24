@@ -1,4 +1,6 @@
 (function(ext) {
+    var alarm_went_off = false; // This becomes true after the alarm goes off
+
     // Cleanup function when the extension is unloaded
     ext._shutdown = function() {};
 
@@ -8,29 +10,31 @@
         return {status: 2, msg: 'Ready'};
     };
 
-    // Functions for block with type 'w' will get a callback function as the 
-    // final argument. This should be called to indicate that the block can
-    // stop waiting.
-    ext.wait_random = function(callback) {
-        wait = Math.random();
-        console.log('Waiting for ' + wait + ' seconds');
-        window.setTimeout(function() {
-            callback();
-        }, wait*1000);
+    ext.set_alarm = function(time) {
+       window.setTimeout(function() {
+           alarm_went_off = true;
+       }, time*1000);
     };
-    
-    ext.power = function(base, exponent) {
-        return Math.pow(base, exponent);
+
+    ext.when_alarm = function() {
+       // Reset alarm_went_off if it is true, and return true
+       // otherwise, return false.
+       if (alarm_went_off === true) {
+           alarm_went_off = false;
+           return true;
+       }
+
+       return false;
     };
 
     // Block and block menu descriptions
     var descriptor = {
         blocks: [
-            ['w', 'wait for random time', 'wait_random'],
-            ['r', '%n ^ %n', 'power', 2, 3]
+            ['', 'run alarm after %n seconds', 'set_alarm', '2'],
+            ['h', 'when alarm goes off', 'when_alarm'],
         ]
     };
 
     // Register the extension
-    ScratchExtensions.register('Random wait extension', descriptor, ext);
+    ScratchExtensions.register('Alarm extension', descriptor, ext);
 })({});
