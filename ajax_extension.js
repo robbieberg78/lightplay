@@ -84,7 +84,7 @@
             sensor.state = false;
             register(channel, this.get_callback(channel));
          }
-         console.log(sensor.state);:
+         console.log(sensor.state);
 
          return sensor.state;
       };
