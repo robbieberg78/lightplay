@@ -47,6 +47,14 @@
       sendall(channel, "Off", callback);
    };
 
+   ext.send_all_on = function(callback) {
+      sendall(0, "On", callback);
+   };
+
+   ext.send_all_off = function(callback) {
+      sendall(0, "Off", callback);
+   };
+
    ext.send_rev = function(channel, callback) {
       sendall(channel, "Rev", callback);
    };
@@ -63,6 +71,8 @@
       blocks: [
          ['w', 'Turn  %n on', 'send_on', 1],
          ['w', 'Turn  %n off', 'send_off', 1],
+         ['w', 'Turn all on', 'send_all_on'],
+         ['w', 'Turn all off', 'send_all_off'],
          ['w', 'Reverse  %n', 'send_rev', 1],
          ['R', 'Wait until sensor %n is pushed', 'register', 8],
          ['R', 'Sensor %n\'s value', 'poll', 8]
