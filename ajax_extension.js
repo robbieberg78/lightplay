@@ -59,9 +59,41 @@
       sendall(channel, "Rev", callback);
    };
 
-   ext.register = function(channel, callback) {
+   function register(channel, callback) {
       sendall(channel, "Register", callback);
-   };
+   }
+
+   function sensor_manager() {
+      this.sensors = {};
+      this.get_callback = function(channel) {
+         return function set_states(data) {
+            this.sensors[channel].state = true;
+            this.sensors[channel].listeners -= 1;
+         };
+      };
+      this.register_and_poll = function(channel) {
+         if (!channel in this.sensors) {
+            this.sensors[channel] = {
+               state: false,
+               listeners: 0
+            };
+         }
+         var sensor = this.sensors[channel];
+         if (sensor.listeners === 0) {
+            sensor.listeners++;
+            sensor.state = false;
+            register(channel, this.get_callback(channel));
+         }
+         if (sensor.state) {
+            sensor.listeners--;
+         }
+         return sensor.state;
+      };
+   }
+
+   manager = new sensor_manager();
+
+   ext.register_and_poll = manager.register_and_poll;
 
    ext.poll = function(channel, callback) {
       sendall(channel, "Poll", callback);
@@ -74,7 +106,7 @@
          ['w', 'Turn all on', 'send_all_on'],
          ['w', 'Turn all off', 'send_all_off'],
          ['w', 'Reverse  %n', 'send_rev', 1],
-         ['R', 'Wait until sensor %n is pushed', 'register', 8],
+         ['h', 'Wait until sensor %n is pushed', 'register', 8],
          ['R', 'Sensor %n\'s value', 'poll', 8]
       ],
 
