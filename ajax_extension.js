@@ -65,12 +65,6 @@
 
    function sensor_manager() {
       this.sensors = {};
-      this.get_callback = function(channel) {
-         return function set_states(data) {
-            this.sensors[channel].state = true;
-            this.sensors[channel].listeners -= 1;
-         };
-      };
       this.register_and_poll = function(channel) {
          console.log("register and poll");
          if (!(channel in this.sensors)) {
@@ -86,7 +80,7 @@
             console.log("register");
             sensor.listeners++;
             sensor.state = false;
-            register(channel, this.get_callback(channel));
+            register(channel, get_callback(channel));
          }
          console.log(sensor.state);
 
@@ -94,7 +88,15 @@
       };
    }
 
-   manager = new sensor_manager();
+   var manager = new sensor_manager();
+
+   function get_callback(channel) {
+      return function set_states(data) {
+         manager.sensors[channel].state = true;
+         manager.sensors[channel].listeners -= 1;
+      };
+   }
+
 
 
 
