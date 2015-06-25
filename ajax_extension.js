@@ -70,6 +70,8 @@
                state: false,
                listeners: 0
             };
+            register(channel, get_callback(channel));
+            return false;
          }
          var sensor = this.sensors[channel];
          if (sensor.state) {
