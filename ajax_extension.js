@@ -66,23 +66,20 @@
    function sensor_manager() {
       this.sensors = {};
       this.register_and_poll = function(channel) {
-         console.log("register and poll");
          if (!(channel in this.sensors)) {
-            console.log("init object");
             this.sensors[channel] = {
                state: false,
                listeners: 0
             };
          }
          var sensor = this.sensors[channel];
-         console.log(sensor);
          if (sensor.listeners === 0) {
-            console.log("register");
-            sensor.listeners++;
+            sensor.listeners += 1;
             sensor.state = false;
             register(channel, get_callback(channel));
          }
          console.log(sensor.state);
+         console.log(sensor.listeners);
 
          return sensor.state;
       };
