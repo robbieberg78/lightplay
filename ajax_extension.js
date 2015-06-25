@@ -64,12 +64,7 @@
    }
 
    function sensor_manager() {
-      this.sensors = {
-         test: 5
-      };
-
-      console.log("created manager")
-
+      this.sensors = {};
       this.get_callback = function(channel) {
          return function set_states(data) {
             this.sensors[channel].state = true;
@@ -101,7 +96,11 @@
 
    manager = new sensor_manager();
 
-   ext.register_and_poll = manager.register_and_poll;
+
+
+   ext.register_and_poll = function(channel) {
+      manager.register_and_poll(channel);
+   };
 
    ext.poll = function(channel, callback) {
       sendall(channel, "Poll", callback);
