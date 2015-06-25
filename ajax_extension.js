@@ -9,7 +9,8 @@
       };
    };
 
-   ext.sendall = function(channel, action, callback) {
+
+   function sendall(channel, action, callback) {
       console.log("call start");
       if (0 <= channel && channel <= 9) {
          console.log("ajax start");
@@ -22,7 +23,7 @@
             success: function(data, tStatus, xhr) {
                console.log(data);
                console.log(tStatus);
-               callback("SUCCESS");
+               callback(data);
             },
             error: function(xhr, tStatus, error) {
                console.log(tStatus);
@@ -36,39 +37,35 @@
 
          });
       }
+   }
+
+   ext.send_on = function(channel, callback) {
+      sendall(channel, "On", callback);
    };
 
-   ext.test = function(arg, callback) {
+   ext.send_off = function(channel, callback) {
+      sendall(channel, "Off", callback);
+   };
 
-      callback(arg);
+   ext.send_rev = function(channel, callback) {
+      sendall(channel, "Rev", callback);
    };
 
    ext.register = function(channel, callback) {
-      $.ajax({
-         url: PLUGIN_URL,
-         data: {
-            channel: channel,
-            action: 'Register'
-         },
-         success: function(data, tStatus, xhr) {
-            console.log(data);
-            console.log(tStatus);
-            callback("SUCCESS");
-         },
-         error: function(xhr, tStatus, error) {
-            console.log(tStatus);
-            console.log(error);
-            callback("ERROR");
-         }
-      });
+      sendall(channel, "Register", callback);
+   };
 
+   ext.poll = function(channel, callback) {
+      sendall(channel, "Poll", callback);
    };
 
    var descriptor = {
       blocks: [
-         ['w', 'Turn  %n %m.action', 'sendall', 1, 'On'],
-         ['R', 'Test: %n', 'test', 0x00],
-         ['R', 'Wait until sensor %n fires', 'register']
+         ['w', 'Turn  %n on', 'send_on', 1],
+         ['w', 'Turn  %n off', 'send_off', 1],
+         ['w', 'Reverse  %n', 'send_rev', 1],
+         ['R', 'Wait until sensor %n is pushed', 'register', 8],
+         ['R', 'Sensor %n\'s value', 'poll', 8]
       ],
 
       url: 'https://github.com/bsb20/scratch-to-serial/tree/gh-pages',
