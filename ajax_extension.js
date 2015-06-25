@@ -73,7 +73,7 @@
       };
       this.register_and_poll = function(channel) {
          console.log("register and poll");
-         return false;
+         return !(channel in this.sensors);
          if (!(channel in this.sensors)) {
             console.log("init object");
             this.sensors[channel] = {
