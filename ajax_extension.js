@@ -84,9 +84,8 @@
             sensor.state = false;
             register(channel, this.get_callback(channel));
          }
-         if (sensor.state) {
-            sensor.listeners--;
-         }
+         console.log(sensor.state);:
+
          return sensor.state;
       };
    }
