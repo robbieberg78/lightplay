@@ -101,7 +101,7 @@
 
 
    ext.register_and_poll = function(channel) {
-      manager.register_and_poll(channel);
+      return manager.register_and_poll(channel);
    };
 
    ext.poll = function(channel, callback) {
