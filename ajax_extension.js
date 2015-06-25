@@ -64,7 +64,9 @@
    }
 
    function sensor_manager() {
-      this.sensors = {};
+      this.sensors = {
+         test: 5
+      };
       this.get_callback = function(channel) {
          return function set_states(data) {
             this.sensors[channel].state = true;
