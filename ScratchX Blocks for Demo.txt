@@ -5,9 +5,9 @@ ScratchX Blocks for Demo
 	turn on all () - a synchronous command
 	turn off all () - a synchronous command
 	reverse (n) - a synchronous command, n = 1-4
-	fade in (n) - a synchronous command, n = 1-4
-	fade out (n) - a synchronous command, n = 1-4
-	setpower (n) to (x) -  synchronous command, n = 1-4, x= 0-100 (we’ll have to send x as a separate byte, let’s talk about how to do this…)
+	fade in (n) - an asynchronous command, n = 1-4 ; wait for a hard coded amount of time before going on to next block
+	fade out (n) - an asynchronous command, n = 1-4 ;wait for a hard coded amount of time before going on to next block
+	setpower (n) to Low/Medium/High -  synchronous command, n = 1-4 (single block, choose from menu of power levels: Low, Medium, High)
 	sensorvalue(n) - an asynchronous reporter, n = 1-2
 	when sensor1 is connected() - a hat block that triggers on rising edge
 	when sensor1 is not connected() - a hat block that triggers on falling edge
@@ -21,7 +21,9 @@ The lower nibble of the byte is the command type:
 	reverse light/motor = 2
         fade in power to light/motor = 3
 	fade in power to light/motor = 4
-        setpower light/motor = 5
+        setpowerlow light/motor = 5
+	setpowermedium light/motor = 6
+	setpowerhigh light/motor = 7
         report analog value of sensor1 = 8
 	report analog value of sensor2 = 9
 
