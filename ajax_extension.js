@@ -72,15 +72,13 @@
             };
          }
          var sensor = this.sensors[channel];
-         if (sensor.listeners === 0) {
+         if (sensor.state) {
             sensor.listeners += 1;
             sensor.state = false;
             register(channel, get_callback(channel));
+            return true;
          }
-         console.log(sensor.state);
-         console.log(sensor.listeners);
-
-         return sensor.state;
+         return false;
       };
    }
 
