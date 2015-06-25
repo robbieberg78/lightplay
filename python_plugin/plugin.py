@@ -59,12 +59,18 @@ class ArduinoHTTPRequestHandler(BaseHTTPRequestHandler):
       query = parse_qs(self.path.strip("/?"))
       action = self.server.actions[query["action"][0]]
       channel = int(query["channel"][0])
-      if query["action"][0] == "Register":
-         action(channel, self._event.set)
-         self._event.wait()
-         self._event.clear()
-      else:
-         action(channel)
+      try:
+         if query["action"][0] == "Register":
+            action(channel, self._event.set)
+            self._event.wait()
+            self._event.clear()
+            result = "Fired"
+         else:
+            result = action(channel)
+         self.wfile.write(result)
+      except Exception as e:
+         traceback.print_exc()
+         self.wfile.write("Error: {0}".format(e))
 
 
 class ArduinoHTTPServer(HTTPServer, ThreadingMixIn):
@@ -72,7 +78,7 @@ class ArduinoHTTPServer(HTTPServer, ThreadingMixIn):
    def __init__(self, arduino, *args, **kwargs):
       self._arduino = arduino
       self.actions = {
-          "On": arduino.on, "Off": arduino.off, "Register": arduino.register}
+          "On": arduino.on, "Off": arduino.off, "Rev": arduino.reverse, "Register": arduino.register, "Poll": arduino.poll}
       HTTPServer.__init__(self, *args, **kwargs)
 
 
