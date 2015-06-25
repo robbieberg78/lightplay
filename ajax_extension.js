@@ -32,7 +32,6 @@
             },
             complete: function(xhr, tStatus) {
                console.log(tStatus);
-               callback("COMPLETE");
             }
 
          });
