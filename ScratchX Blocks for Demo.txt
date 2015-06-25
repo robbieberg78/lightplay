@@ -1,0 +1,30 @@
+ScratchX Blocks for Demo
+
+	turn on (n) - a synchronous command, n = 1-4
+	turn off (n) - a synchronous command, n = 1-4
+	turn on all () - a synchronous command
+	turn off all () - a synchronous command
+	reverse (n) - a synchronous command, n = 1-4
+	fade in (n) - a synchronous command, n = 1-4
+	fade out (n) - a synchronous command, n = 1-4
+	setpower (n) to (x) -  synchronous command, n = 1-4, x= 0-100 (we’ll have to send x as a separate byte, let’s talk about how to do this…)
+	sensorvalue(n) - an asynchronous reporter, n = 1-2
+	when sensor1 is connected() - a hat block that triggers on rising edge
+	when sensor1 is not connected() - a hat block that triggers on falling edge
+
+
+The above blocks are based on the following low level protocol for encoding a command and a channel number in a single byte sent from Python to Arduino:
+
+The lower nibble of the byte is the command type: 
+	turn on light/motor = 0
+	turn off light/motor = 1
+	reverse light/motor = 2
+        fade in power to light/motor = 3
+	fade in power to light/motor = 4
+        setpower light/motor = 5
+        report analog value of sensor1 = 8
+	report analog value of sensor2 = 9
+
+The  high nibble gives the channel  number. Channels 0-7 are for outputs, channels 8-15 are for inputs.
+
+For this demo channel 0 effects "all" outputs, channels 1-4 for the for individual outputs. Outputs 5 -7 are not implemented in the demo hardware. Channels 8-15  for reading sensors .The demo hardware uses  only channels 8 and 9 for inputs. Channels 10-15 are not implemented.
