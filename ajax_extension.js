@@ -93,12 +93,32 @@
       };
    }
 
+   var registered = false;
+   var fired = false;
 
+   function fired(data) {
+      fired = true;
+      registered = false;
+   }
 
+   //   ext.register_and_poll = function(channel) {
+   //      return manager.register_and_poll(channel);
+   //   };
 
    ext.register_and_poll = function(channel) {
-      return manager.register_and_poll(channel);
+      if (!registered) {
+         register(channel, fired);
+         registered = true;
+      }
+      if (fired) {
+         fired = false;
+         return true;
+      }
+      return false;
+
    };
+
+
 
    ext.poll = function(channel, callback) {
       sendall(channel, "Poll", callback);
