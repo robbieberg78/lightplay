@@ -96,7 +96,7 @@
    var registered = false;
    var fired = false;
 
-   function fired(data) {
+   function sensor_callback(data) {
       fired = true;
       registered = false;
    }
@@ -107,7 +107,7 @@
 
    ext.register_and_poll = function(channel) {
       if (!registered) {
-         register(channel, fired);
+         register(channel, sensor_callback);
          registered = true;
       }
       if (fired) {
