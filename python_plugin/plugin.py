@@ -15,7 +15,6 @@ def run_test_arduino(args):
    #   arduino = TestLightPlayer()
    arduino = SerialLightPlayer(args.serial_port, args.baudrate)
    arduino.addSensor(sensor.ArduinoEdgeTriggeredSensor, 8)
-   arduino.register(8, test_function, "foo", "bar")
    return arduino
 
 
@@ -67,13 +66,14 @@ class ArduinoHTTPRequestHandler(BaseHTTPRequestHandler):
             result = "Fired"
          else:
             result = action(channel)
+         print "RESULT: ", result
          self.wfile.write(result)
       except Exception as e:
          traceback.print_exc()
          self.wfile.write("Error: {0}".format(e))
 
 
-class ArduinoHTTPServer(HTTPServer, ThreadingMixIn):
+class ArduinoHTTPServer(ThreadingMixIn, HTTPServer):
 
    def __init__(self, arduino, *args, **kwargs):
       self._arduino = arduino
