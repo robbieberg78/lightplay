@@ -11,9 +11,8 @@
 
 
    function sendall(channel, action, callback) {
-      console.log("call start");
+      console.log(action + " start");
       if (0 <= channel && channel <= 9) {
-         console.log("ajax start");
          $.ajax({
             url: PLUGIN_URL,
             data: {
@@ -21,17 +20,15 @@
                action: action
             },
             success: function(data, tStatus, xhr) {
-               console.log(data);
-               console.log(tStatus);
+               console.log(action + " " + tStatus);
                callback(data);
             },
             error: function(xhr, tStatus, error) {
-               console.log(tStatus);
-               console.log(error);
+               console.log(action + " " + tStatus)
                callback("ERROR");
             },
             complete: function(xhr, tStatus) {
-               console.log(tStatus);
+               console.log(action + " " + tStatus)
             }
 
          });
