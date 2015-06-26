@@ -130,7 +130,7 @@
          ['w', 'Turn all on', 'send_all_on'],
          ['w', 'Turn all off', 'send_all_off'],
          ['w', 'Reverse  %n', 'send_rev', 1],
-         ['h', 'When sensor %n clips are connected', 'register_and_poll', 8],
+         ['h', 'When sensor %n clips are connected', 'register_and_poll', 1],
          ['R', 'Sensor %n\'s value', 'poll', 1]
       ],
 
