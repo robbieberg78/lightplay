@@ -65,16 +65,18 @@
          if (!(channel in this.sensors)) {
             this.sensors[channel] = {
                state: false,
-               listeners: 0
+               listeners: 1
             };
             register(channel, get_callback(channel));
             return false;
          }
          var sensor = this.sensors[channel];
          if (sensor.state) {
-            sensor.listeners += 1;
-            sensor.state = false;
-            register(channel, get_callback(channel));
+            if (sensor.listeners === 0) {
+               sensor.listeners += 1;
+               sensor.state = false;
+               register(channel, get_callback(channel));
+            }
             return true;
          }
          return false;
