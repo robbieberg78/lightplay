@@ -7,14 +7,14 @@ int ch1e = 6;
 
 int ch2a = 12;
 int ch2b = 13;
-int ch2e = 9; // v. 1.0 of layout has pins 8 and 9 swapped, need to rewire to this config
+int ch2e = 8; // v. 1.0 of layout has pins 8 and 9 swapped, need to rewire to this config, pin 9 has pwm capabilities but pin 8 does not!
 
 int ch3a = 2;
 int ch3b = 4;
 int ch3e = 3;
 
 int ch4a = 7;
-int ch4b = 8; // v. 1.0 of layout has pins 8 and 9 swapped, need to rewire to this config
+int ch4b = 9; // v. 1.0 of layout has pins 8 and 9 swapped, need to rewire to this config
 int ch4e = 5;
 
 int dirstate = 0;  // bitwise direction state
@@ -22,7 +22,6 @@ int dirstate = 0;  // bitwise direction state
 void setup() {
   Serial.begin(9600);	// opens serial port, sets data rate to 9600 bps, same as Python
   // initialize the digital pins as outputs.
-  pinMode(led, OUTPUT);
   pinMode(ch1a, OUTPUT);
   pinMode(ch1b, OUTPUT);
   pinMode(ch1e, OUTPUT);

@@ -9,6 +9,7 @@ from SocketServer import ThreadingMixIn
 from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
 from urlparse import parse_qs
 import time
+import traceback
 
 
 def run_test_arduino(args):
