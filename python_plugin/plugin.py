@@ -122,5 +122,5 @@ if __name__ == "__main__":
    t.start()
    while True:
       arduino.poll()
-      time.sleep(.01)
+      time.sleep(0.1)
 

@@ -96,6 +96,7 @@ class ArduinoEdgeTriggeredSensor(EdgeTriggeredSensor):
 
    def poll(self):
       result = self._arduino.query(self._channel)
+      # print 'the result is', result
       if result is not None:
          self.low_state() if result >= 50 else self.high_state()
       return EdgeTriggeredSensor.poll(self)
