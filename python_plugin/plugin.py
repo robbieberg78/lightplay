@@ -15,7 +15,8 @@ import traceback
 def run_test_arduino(args):
    #   arduino = TestLightPlayer()
    arduino = SerialLightPlayer(args.serial_port, args.baudrate)
-   arduino.addSensor(sensor.ArduinoEdgeTriggeredSensor, 8)
+   arduino.addSensor(sensor.ArduinoEdgeTriggeredSensor, 1)
+   arduino.addSensor(sensor.ArduinoAnalogSensor, 2)
    return arduino
 
 
@@ -111,5 +112,5 @@ if __name__ == "__main__":
    t.start()
    while True:
       arduino.poll()
-      time.sleep(.005)
+      time.sleep(.01)
 

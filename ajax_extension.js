@@ -110,13 +110,18 @@
          ['w', 'Turn all on', 'send_all_on'],
          ['w', 'Turn all off', 'send_all_off'],
          ['w', 'Reverse  %n', 'send_rev', 1],
-         ['h', 'When sensor %n clips are connected', 'register_and_poll', 1],
+         ['w', 'Set channel %n to %m.power power', 'set_power', 1, 'High'],
+         ['w', 'Fade in channel %n', 'fade_in', 1],
+         ['w', 'Fade out channel %n', 'fade_out', 1],
+         ['h', 'When sensor %n clips become connected', 'register_and_poll', 1],
+         ['h', 'When sensor %n clips become disconnected', 'register_and_poll', 1],
          ['R', 'Sensor %n\'s value', 'poll', 1]
       ],
 
       url: 'https://github.com/bsb20/scratch-to-serial/tree/gh-pages',
       menus: {
-         action: ['On', 'Off']
+         action: ['On', 'Off'],
+         power: ['Low', 'Medium', 'High']
       }
    };
 
