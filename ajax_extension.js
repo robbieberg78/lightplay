@@ -76,7 +76,6 @@
             if (sensor.listeners === 0) {
                sensor.listeners += 1;
                sensor.state = false;
-               sensor.data = "";
                register(channel, get_callback(channel));
             }
             return true;
@@ -99,14 +98,18 @@
    ext.poll_for_on = function(channel) {
       if (manager.register_and_poll(channel)) {
          console.log(manager.sensors[channel].data);
-         return manager.sensors[channel].data === "True";
+         var result = manager.sensors[channel].data === "True";
+         manager.sensors[channel].data = "";
+         return result;
       }
    };
 
    ext.poll_for_off = function(channel) {
       if (manager.register_and_poll(channel)) {
          console.log(manager.sensors[channel].data);
-         return manager.sensors[channel].data === "False";
+         var result = manager.sensors[channel].data === "False";
+         manager.sensors[channel].data = "";
+         return result;
       }
    };
 
