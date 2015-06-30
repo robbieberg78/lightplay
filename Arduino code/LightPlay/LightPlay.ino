@@ -1,5 +1,9 @@
 byte incomingByte = 0;	// for incoming serial data
-byte val = 0; // for analog sensor value
+byte pwmchannel = 1;
+int val = 0; // for analog sensor value
+
+float i = 1;
+float imin = 5;
 
 int ch1a = 10;
 int ch1b = 11;
@@ -129,9 +133,9 @@ void loop() {
        if (channel == 4) {
         digitalWrite(ch4a, bitRead(dirstate,4));
         digitalWrite(ch4b, !bitRead(dirstate,4));
-        }
-        
+        }    
       break;
+      
    case 2: // reverse
     if (channel == 0) { // channel 0 talks to all four LEDs
         digitalWrite(ch1a, !digitalRead(ch1a));
@@ -168,21 +172,164 @@ void loop() {
         digitalWrite(ch4a, !digitalRead(ch4a));
         digitalWrite(ch4b, !digitalRead(ch4b));
         dirstate = dirstate ^ 16; // xor to toggle bit 4
-        }
-      
-        
+        }   
       break;
+
+  case 3: // fade in
+       // still need to implement for channel zero case...
+
+      i = imin;
+      if (channel == 1) {
+        digitalWrite(ch1a, bitRead(dirstate,1));
+        digitalWrite(ch1b, !bitRead(dirstate,1));
+        pwmchannel = ch1e;
+        }
+      if (channel == 2) {
+        digitalWrite(ch2a, bitRead(dirstate,2));
+        digitalWrite(ch2b, !bitRead(dirstate,2));
+        pwmchannel = ch2e;
+        }
+
+       if (channel == 3) {
+        digitalWrite(ch3a, bitRead(dirstate,3));
+        digitalWrite(ch3b, !bitRead(dirstate,3));
+        pwmchannel = ch3e;
+        }
+      if (channel == 4) {
+        digitalWrite(ch4a, bitRead(dirstate,4));
+        digitalWrite(ch4b, !bitRead(dirstate,4));
+        pwmchannel = ch4e;
+        }
+      while (i <= 254) {
+        analogWrite(pwmchannel, i);
+        i =30*i/29;
+        delay(20);
+        }  
+      break;
+
+  case 4: // fade out
+       // still need to implement for channel zero case...
+
+      i = 255;
+      if (channel == 1) {
+        digitalWrite(ch1a, bitRead(dirstate,1));
+        digitalWrite(ch1b, !bitRead(dirstate,1));
+        pwmchannel = ch1e;
+        }
+      if (channel == 2) {
+        digitalWrite(ch2a, bitRead(dirstate,2));
+        digitalWrite(ch2b, !bitRead(dirstate,2));
+       pwmchannel = ch2e;
+        }
+
+       if (channel == 3) {
+        digitalWrite(ch3a, bitRead(dirstate,3));
+        digitalWrite(ch3b, !bitRead(dirstate,3));
+        pwmchannel = ch3e;
+        }
+      if (channel == 4) {
+        digitalWrite(ch4a, bitRead(dirstate,4));
+        digitalWrite(ch4b, !bitRead(dirstate,4));
+       pwmchannel = ch4e;
+        }
+      while (i >= imin) {
+        analogWrite(pwmchannel, i);
+        i =29*i/30;
+        delay(20);
+      }  
+      break;
+
+  case 5: // setpowerlow
+       // still need to implement for channel zero case...
+      if (channel == 1) {
+        digitalWrite(ch1a, bitRead(dirstate,1));
+        digitalWrite(ch1b, !bitRead(dirstate,1));
+        pwmchannel = ch1e;
+        }
+      if (channel == 2) {
+        digitalWrite(ch2a, bitRead(dirstate,2));
+        digitalWrite(ch2b, !bitRead(dirstate,2));
+        pwmchannel = ch2e;
+        }
+
+       if (channel == 3) {
+        digitalWrite(ch3a, bitRead(dirstate,3));
+        digitalWrite(ch3b, !bitRead(dirstate,3));
+        pwmchannel = ch3e;
+        }
+      if (channel == 4) {
+        digitalWrite(ch4a, bitRead(dirstate,4));
+        digitalWrite(ch4b, !bitRead(dirstate,4));
+        pwmchannel = ch4e;
+        }
+        analogWrite(pwmchannel, 10);
+      break;
+
+  case 6: // setpowermedium
+       // still need to implement for channel zero case...
+      if (channel == 1) {
+        digitalWrite(ch1a, bitRead(dirstate,1));
+        digitalWrite(ch1b, !bitRead(dirstate,1));
+        pwmchannel = ch1e;
+        }
+      if (channel == 2) {
+        digitalWrite(ch2a, bitRead(dirstate,2));
+        digitalWrite(ch2b, !bitRead(dirstate,2));
+        pwmchannel = ch2e;
+        }
+
+       if (channel == 3) {
+        digitalWrite(ch3a, bitRead(dirstate,3));
+        digitalWrite(ch3b, !bitRead(dirstate,3));
+        pwmchannel = ch3e;
+        }
+      if (channel == 4) {
+        digitalWrite(ch4a, bitRead(dirstate,4));
+        digitalWrite(ch4b, !bitRead(dirstate,4));
+        pwmchannel = ch4e;
+        }
+        analogWrite(pwmchannel, 50);
+      break;
+
+  case 7: // setpowerhigh
+       // still need to implement for channel zero case...
+      if (channel == 1) {
+        digitalWrite(ch1a, bitRead(dirstate,1));
+        digitalWrite(ch1b, !bitRead(dirstate,1));
+        pwmchannel = ch1e;
+        }
+      if (channel == 2) {
+        digitalWrite(ch2a, bitRead(dirstate,2));
+        digitalWrite(ch2b, !bitRead(dirstate,2));
+        pwmchannel = ch2e;
+        }
+
+       if (channel == 3) {
+        digitalWrite(ch3a, bitRead(dirstate,3));
+        digitalWrite(ch3b, !bitRead(dirstate,3));
+        pwmchannel = ch3e;
+        }
+      if (channel == 4) {
+        digitalWrite(ch4a, bitRead(dirstate,4));
+        digitalWrite(ch4b, !bitRead(dirstate,4));
+        pwmchannel = ch4e;
+        }
+        analogWrite(pwmchannel, 255);
+      break;
+          
     case 8:
-      // sensor1 is currently on channel 8, but should switch to channel 1; it is wired to Aduino analog pin A1
-      if (channel == 8) {
+      // sensor1 is wired to Aduino analog pin A1
+      if (channel == 1) {
       
-      val = digitalRead(A1);   // read the input pin
+      val = analogRead(A1);   // read the input pin
+      val = map(val, 0, 1023, 0, 100); // remap 10 bit range to 0 to 100
       Serial.write(val); // and send it to Python
       }
-      // sensor2 is currently unimplented, but should switch to channel 2;  it is wired to Aduino analog pin A1
+      // sensor2 is wired to Aduino analog pin A1
       if (channel == 2) {
       
-      val = digitalRead(A0);   // read the input pin
+      val = analogRead(A0);   // read the input pin
+      val = map(val, 0, 1023, 0, 100); // remap 10 bit range to 0 to 100
       Serial.write(val); // and send it to Python
       }
             
