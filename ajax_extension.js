@@ -21,6 +21,7 @@
             },
             success: function(data, tStatus, xhr) {
                console.log(action + " " + tStatus);
+               console.log(data + " " + ":: DATA");
                callback(data);
             },
             error: function(xhr, tStatus, error) {
