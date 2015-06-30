@@ -1,4 +1,5 @@
 byte incomingByte = 0;	// for incoming serial data
+byte pwmchannel = 1;
 int val = 0; // for analog sensor value
 
 float i = 1;
@@ -181,23 +182,23 @@ void loop() {
       if (channel == 1) {
         digitalWrite(ch1a, bitRead(dirstate,1));
         digitalWrite(ch1b, !bitRead(dirstate,1));
-        byte pwmchannel = ch1e
+        pwmchannel = ch1e;
         }
       if (channel == 2) {
         digitalWrite(ch2a, bitRead(dirstate,2));
         digitalWrite(ch2b, !bitRead(dirstate,2));
-        byte pwmchannel = ch2e
+        pwmchannel = ch2e;
         }
 
        if (channel == 3) {
         digitalWrite(ch3a, bitRead(dirstate,3));
         digitalWrite(ch3b, !bitRead(dirstate,3));
-        byte pwmchannel = ch3e
+        pwmchannel = ch3e;
         }
       if (channel == 4) {
         digitalWrite(ch4a, bitRead(dirstate,4));
         digitalWrite(ch4b, !bitRead(dirstate,4));
-        byte pwmchannel = ch4e
+        pwmchannel = ch4e;
         }
       while (i <= 254) {
         analogWrite(pwmchannel, i);
@@ -213,23 +214,23 @@ void loop() {
       if (channel == 1) {
         digitalWrite(ch1a, bitRead(dirstate,1));
         digitalWrite(ch1b, !bitRead(dirstate,1));
-        byte pwmchannel = ch1e
+        pwmchannel = ch1e;
         }
       if (channel == 2) {
         digitalWrite(ch2a, bitRead(dirstate,2));
         digitalWrite(ch2b, !bitRead(dirstate,2));
-        byte pwmchannel = ch2e
+       pwmchannel = ch2e;
         }
 
        if (channel == 3) {
         digitalWrite(ch3a, bitRead(dirstate,3));
         digitalWrite(ch3b, !bitRead(dirstate,3));
-        byte pwmchannel = ch3e
+        pwmchannel = ch3e;
         }
       if (channel == 4) {
         digitalWrite(ch4a, bitRead(dirstate,4));
         digitalWrite(ch4b, !bitRead(dirstate,4));
-        byte pwmchannel = ch4e
+       pwmchannel = ch4e;
         }
       while (i >= imin) {
         analogWrite(pwmchannel, i);
@@ -243,23 +244,23 @@ void loop() {
       if (channel == 1) {
         digitalWrite(ch1a, bitRead(dirstate,1));
         digitalWrite(ch1b, !bitRead(dirstate,1));
-        byte pwmchannel = ch1e
+        pwmchannel = ch1e;
         }
       if (channel == 2) {
         digitalWrite(ch2a, bitRead(dirstate,2));
         digitalWrite(ch2b, !bitRead(dirstate,2));
-        byte pwmchannel = ch2e
+        pwmchannel = ch2e;
         }
 
        if (channel == 3) {
         digitalWrite(ch3a, bitRead(dirstate,3));
         digitalWrite(ch3b, !bitRead(dirstate,3));
-        byte pwmchannel = ch3e
+        pwmchannel = ch3e;
         }
       if (channel == 4) {
         digitalWrite(ch4a, bitRead(dirstate,4));
         digitalWrite(ch4b, !bitRead(dirstate,4));
-        byte pwmchannel = ch4e
+        pwmchannel = ch4e;
         }
         analogWrite(pwmchannel, 10);
       break;
@@ -269,23 +270,23 @@ void loop() {
       if (channel == 1) {
         digitalWrite(ch1a, bitRead(dirstate,1));
         digitalWrite(ch1b, !bitRead(dirstate,1));
-        byte pwmchannel = ch1e
+        pwmchannel = ch1e;
         }
       if (channel == 2) {
         digitalWrite(ch2a, bitRead(dirstate,2));
         digitalWrite(ch2b, !bitRead(dirstate,2));
-        byte pwmchannel = ch2e
+        pwmchannel = ch2e;
         }
 
        if (channel == 3) {
         digitalWrite(ch3a, bitRead(dirstate,3));
         digitalWrite(ch3b, !bitRead(dirstate,3));
-        byte pwmchannel = ch3e
+        pwmchannel = ch3e;
         }
       if (channel == 4) {
         digitalWrite(ch4a, bitRead(dirstate,4));
         digitalWrite(ch4b, !bitRead(dirstate,4));
-        byte pwmchannel = ch4e
+        pwmchannel = ch4e;
         }
         analogWrite(pwmchannel, 50);
       break;
@@ -295,23 +296,23 @@ void loop() {
       if (channel == 1) {
         digitalWrite(ch1a, bitRead(dirstate,1));
         digitalWrite(ch1b, !bitRead(dirstate,1));
-        byte pwmchannel = ch1e
+        pwmchannel = ch1e;
         }
       if (channel == 2) {
         digitalWrite(ch2a, bitRead(dirstate,2));
         digitalWrite(ch2b, !bitRead(dirstate,2));
-        byte pwmchannel = ch2e
+        pwmchannel = ch2e;
         }
 
        if (channel == 3) {
         digitalWrite(ch3a, bitRead(dirstate,3));
         digitalWrite(ch3b, !bitRead(dirstate,3));
-        byte pwmchannel = ch3e
+        pwmchannel = ch3e;
         }
       if (channel == 4) {
         digitalWrite(ch4a, bitRead(dirstate,4));
         digitalWrite(ch4b, !bitRead(dirstate,4));
-        byte pwmchannel = ch4e
+        pwmchannel = ch4e;
         }
         analogWrite(pwmchannel, 255);
       break;
