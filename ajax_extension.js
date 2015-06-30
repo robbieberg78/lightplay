@@ -92,30 +92,10 @@
       };
    }
 
-   //var registered = false;
-   //var fired = false;
-
-   //function sensor_callback(data) {
-   //   fired = true;
-   //   registered = false;
-   //}
 
    ext.register_and_poll = function(channel) {
       return manager.register_and_poll(channel);
    };
-
-   // ext.register_and_poll = function(channel) {
-   //    if (!registered) {
-   //       register(channel, sensor_callback);
-   //       registered = true;
-   //    }
-   //    if (fired) {
-   //       fired = false;
-   //       return true;
-   //    }
-   //    return false;
-
-   // };
 
 
 

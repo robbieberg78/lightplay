@@ -45,14 +45,15 @@ class EdgeTriggeredSensor(EventSensor):
 
    def __init__(self):
       EventSensor.__init__(self)
-      self._state = True
+      self._state = False
       self._last_state = self._state
 
    def poll(self):
       if self._state != self._last_state:
          self._last_state = self._state
-         if not self._state:
+         if self._state:
             self.raise_event()
+      return self._state
 
    def high_state(self):
       self._state = True
@@ -76,7 +77,7 @@ class PromptingEdgeTriggeredSensor(EdgeTriggeredSensor):
          self.high_state()
       if command == "L":
          self.low_state()
-      EdgeTriggeredSensor.poll(self)
+      return EdgeTriggeredSensor.poll(self)
 
 
 class ArduinoEdgeTriggeredSensor(EdgeTriggeredSensor):
@@ -91,6 +92,6 @@ class ArduinoEdgeTriggeredSensor(EdgeTriggeredSensor):
    def poll(self):
       result = self._arduino.query(self._channel)
       if result is not None:
-         self.high_state() if result == LightPlayer.ON else self.low_state()
-      EdgeTriggeredSensor.poll(self)
+         self.low_state() if result == LightPlayer.ON else self.high_state()
+      return EdgeTriggeredSensor.poll(self)
 

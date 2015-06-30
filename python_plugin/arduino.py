@@ -40,7 +40,7 @@ class LightPlayer(object):
          if not self.validChannel(channel):
             raise ValueError("Must poll a valid channel")
          if channel in self._sensors:
-            self._sensors[channel].poll()
+            return self._sensors[channel].poll()
       else:
          for sensor in self._sensors.values():
             sensor.poll()

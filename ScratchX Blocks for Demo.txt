@@ -16,15 +16,15 @@ ScratchX Blocks for Demo
 The above blocks are based on the following low level protocol for encoding a command and a channel number in a single byte sent from Python to Arduino:
 
 The lower nibble of the byte is the command type: 
-	turn on light/motor = 0
-	turn off light/motor = 1
+	turn off light/motor = 0
+	turn on light/motor = 1
 	reverse light/motor = 2
-        fade in power to light/motor = 3
+   fade in power to light/motor = 3
 	fade in power to light/motor = 4
-        setpowerlow light/motor = 5
+   setpowerlow light/motor = 5
 	setpowermedium light/motor = 6
 	setpowerhigh light/motor = 7
-        report analog value of sensor1 = 8
+   report analog value of sensor1 = 8
 	report analog value of sensor2 = 9
 
 The  high nibble gives the channel  number. Channels 0-7 are for outputs, channels 8-15 are for inputs.
