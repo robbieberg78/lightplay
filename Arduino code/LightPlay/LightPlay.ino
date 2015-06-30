@@ -1,6 +1,6 @@
 byte incomingByte = 0;	// for incoming serial data
 byte pwmchannel = 1;
-int val = 0; // for analog sensor value
+byte val = 0; // for analog sensor value
 
 float i = 1;
 float imin = 5;
@@ -72,7 +72,7 @@ void loop() {
   
   switch (command)  {
     case 0: // turn actuator off
-      if (channel == 0) { // channel 0 talks to all four ports
+      if (channel == 0) { // channel 0 talks to all four outputs
           digitalWrite(ch1a, LOW);
           digitalWrite(ch1b, LOW);
           digitalWrite(ch2a, LOW);
@@ -104,7 +104,7 @@ void loop() {
  
       break;
     case 1: // turn on port
-      if (channel == 0) { // channel 0 talks to all four LEDs
+      if (channel == 0) { // channel 0 talks to all four outputs
         digitalWrite(ch1a, bitRead(dirstate,1));
         digitalWrite(ch1b, !bitRead(dirstate,1));
         digitalWrite(ch2a, bitRead(dirstate,2));
@@ -137,7 +137,7 @@ void loop() {
       break;
       
    case 2: // reverse
-    if (channel == 0) { // channel 0 talks to all four LEDs
+    if (channel == 0) { // channel 0 talks to all four outputs
         digitalWrite(ch1a, !digitalRead(ch1a));
         digitalWrite(ch1b, !digitalRead(ch1b));
         digitalWrite(ch2a, !digitalRead(ch2a));
@@ -321,15 +321,15 @@ void loop() {
       // sensor1 is wired to Aduino analog pin A1
       if (channel == 1) {
       
-      val = analogRead(A1);   // read the input pin
-      val = map(val, 0, 1023, 0, 100); // remap 10 bit range to 0 to 100
+      val = analogRead(A1) / 4;   // read the input pin
+       // val = map(val, 0, 1023, 0, 100); // remap 10 bit range to 0 to 100
       Serial.write(val); // and send it to Python
       }
       // sensor2 is wired to Aduino analog pin A1
       if (channel == 2) {
       
       val = analogRead(A0);   // read the input pin
-      val = map(val, 0, 1023, 0, 100); // remap 10 bit range to 0 to 100
+      // val = map(val, 0, 1023, 0, 100); // remap 10 bit range to 0 to 100
       Serial.write(val); // and send it to Python
       }
             
