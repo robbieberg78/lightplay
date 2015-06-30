@@ -20,7 +20,7 @@ class BaseSensor(object):
    def poll(self):
       raise NotImplementedError
 
-   def value(self):
+   def sensor_value(self):
       raise NotImplementedError
 
 '''Now, we'll start defining some actual sensor behavior.  This particular sensor keep a list of interested functions.  Registered listeners will be 
@@ -51,14 +51,13 @@ class EdgeTriggeredSensor(EventSensor):
       self._state = False
       self._last_state = self._state
 
-   def value(self):
-      return "Fired"
+   def sensor_value(self):
+      return self._state
 
    def poll(self):
       if self._state != self._last_state:
          self._last_state = self._state
-         if self._state:
-            self.raise_event()
+         self.raise_event()
       return self._state
 
    def high_state(self):
@@ -98,7 +97,7 @@ class ArduinoEdgeTriggeredSensor(EdgeTriggeredSensor):
    def poll(self):
       result = self._arduino.query(self._channel)
       if result is not None:
-         self.low_state() if result == LightPlayer.ON else self.high_state()
+         self.low_state() if result >= 50 else self.high_state()
       return EdgeTriggeredSensor.poll(self)
 
 
@@ -115,4 +114,8 @@ class ArduinoAnalogSensor(EventSensor):
       if result is not None:
          self.__last_value = result
          self.raise_event()
+      return result
+
+   def sensor_value(self):
+      return self.__last_value
 

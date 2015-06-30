@@ -10,6 +10,11 @@ class LightPlayer(object):
    OFF = 0
    ON = 1
    REVERSE = 2
+   FADE_IN = 3
+   FADE_OUT = 4
+   SET_LOW = 5
+   SET_MED = 6
+   SET_HIGH = 7
    QUERY = 8
 
    def __init__(self):
@@ -65,8 +70,23 @@ class LightPlayer(object):
       result = self.read(1)
       return ord(result) if result else None
 
+   def sensor_value(self, channel):
+      if channel in self._sensors:
+         return self._sensors[channel].sensor_value()
+      else:
+         return None
+
    def on(self, channel):
       return self.write(self._compileMessage(channel, LightPlayer.ON))
+
+   def low(self, channel):
+      return self.write(self._compileMessage(channel, LightPlayer.SET_LOW))
+
+   def med(self, channel):
+      return self.write(self._compileMessage(channel, LightPlayer.SET_MED))
+
+   def high(self, channel):
+      return self.write(self._compileMessage(channel, LightPlayer.SET_HIGH))
 
    def off(self, channel):
       return self.write(self._compileMessage(channel, LightPlayer.OFF))

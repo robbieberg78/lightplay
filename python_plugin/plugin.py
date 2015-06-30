@@ -65,7 +65,7 @@ class ArduinoHTTPRequestHandler(BaseHTTPRequestHandler):
             action(channel, self._event.set)
             self._event.wait()
             self._event.clear()
-            result = "Fired"
+            result = str(self.server.sensor_value(channel))
          else:
             result = action(channel)
          print "RESULT: ", result
@@ -80,9 +80,19 @@ class ArduinoHTTPServer(ThreadingMixIn, HTTPServer):
    def __init__(self, arduino, *args, **kwargs):
       self._arduino = arduino
       self.actions = {
-          "On": arduino.on, "Off": arduino.off, "Rev": arduino.reverse, "Register": arduino.register, "Poll": arduino.poll}
+          "On": arduino.on,
+          "Off": arduino.off,
+          "Rev": arduino.reverse,
+          "Register": arduino.register,
+          "Poll": arduino.poll,
+          "Low": arduino.low,
+          "Med": arduino.med,
+          "High": arduino.high
+      }
       HTTPServer.__init__(self, *args, **kwargs)
 
+   def sensor_value(self, channel):
+      return self._arduino.sensor_value(channel)
 
 if __name__ == "__main__":
    #   run_sensors()
