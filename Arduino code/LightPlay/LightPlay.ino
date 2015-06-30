@@ -322,14 +322,14 @@ void loop() {
       if (channel == 1) {
       
       val = analogRead(A1) / 4;   // read the input pin
-       // val = map(val, 0, 1023, 0, 100); // remap 10 bit range to 0 to 100
+      val = map(val, 0, 255, 0, 100); // remap 10 bit range to 0 to 100
       Serial.write(val); // and send it to Python
       }
       // sensor2 is wired to Aduino analog pin A1
       if (channel == 2) {
       
-      val = analogRead(A0);   // read the input pin
-      // val = map(val, 0, 1023, 0, 100); // remap 10 bit range to 0 to 100
+      val = analogRead(A0) / 4;   // read the input pin
+      val = map(val, 0, 255, 0, 100); // remap 10 bit range to 0 to 100
       Serial.write(val); // and send it to Python
       }
             
