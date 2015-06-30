@@ -75,6 +75,7 @@
             if (sensor.listeners === 0) {
                sensor.listeners += 1;
                sensor.state = false;
+               sensor.data = "";
                register(channel, get_callback(channel));
             }
             return true;
@@ -89,18 +90,31 @@
       return function set_states(data) {
          manager.sensors[channel].state = true;
          manager.sensors[channel].listeners -= 1;
+         manager.sensors[channel].data = data;
       };
    }
 
 
-   ext.register_and_poll = function(channel) {
-      return manager.register_and_poll(channel);
+   ext.poll_for_on = function(channel) {
+      if (manager.register_and_poll(channel)) {
+         console.log(manager.sensors[channel].data);
+         return manager.sensors[channel].data === "True";
+      }
    };
 
-
+   ext.poll_for_off = function(channel) {
+      if (manager.register_and_poll(channel)) {
+         console.log(manager.sensors[channel].data);
+         return manager.sensors[channel].data === "False";
+      }
+   };
 
    ext.poll = function(channel, callback) {
       sendall(channel, "Poll", callback);
+   };
+
+   ext.set_power = function(channel, level, callback) {
+      sendall(channel, level, callback);
    };
 
    var descriptor = {
@@ -111,17 +125,17 @@
          ['w', 'Turn all off', 'send_all_off'],
          ['w', 'Reverse  %n', 'send_rev', 1],
          ['w', 'Set channel %n to %m.power power', 'set_power', 1, 'High'],
-         ['w', 'Fade in channel %n', 'fade_in', 1],
-         ['w', 'Fade out channel %n', 'fade_out', 1],
-         ['h', 'When sensor %n clips become connected', 'register_and_poll', 1],
-         ['h', 'When sensor %n clips become disconnected', 'register_and_poll', 1],
+         //         ['w', 'Fade in channel %n', 'fade_in', 1],
+         //         ['w', 'Fade out channel %n', 'fade_out', 1],
+         ['h', 'When sensor %n clips become connected', 'poll_for_on', 1],
+         ['h', 'When sensor %n clips become disconnected', 'poll_for_off', 1],
          ['R', 'Sensor %n\'s value', 'poll', 1]
       ],
 
       url: 'https://github.com/bsb20/scratch-to-serial/tree/gh-pages',
       menus: {
          action: ['On', 'Off'],
-         power: ['Low', 'Medium', 'High']
+         power: ['Low', 'Med', 'High']
       }
    };
 
