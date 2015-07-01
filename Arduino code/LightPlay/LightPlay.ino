@@ -21,7 +21,7 @@ int ch4a = 7;
 int ch4b = 9; // v. 1.0 of layout has pins 8 and 9 swapped, need to rewire to this config
 int ch4e = 5;
 
-int dirstate = 0;  // bitwise direction state
+int dirstate = 255;  // bitwise direction state
 
 void setup() {
   Serial.begin(9600);	// opens serial port, sets data rate to 9600 bps, same as Python
@@ -236,7 +236,8 @@ void loop() {
         analogWrite(pwmchannel, i);
         i =29*i/30;
         delay(20);
-      }  
+      }
+      analogWrite(pwmchannel, 0);
       break;
 
   case 5: // setpowerlow
@@ -318,14 +319,14 @@ void loop() {
       break;
           
     case 8:
-      // sensor1 is wired to Aduino analog pin A1
+      // sensor1 is wired to Arduino analog pin A1
       if (channel == 1) {
       
       val = analogRead(A1) / 4;   // read the input pin
       val = map(val, 0, 255, 0, 100); // remap 10 bit range to 0 to 100
       Serial.write(val); // and send it to Python
       }
-      // sensor2 is wired to Aduino analog pin A1
+      // sensor2 is wired to Arduino analog pin A1
       if (channel == 2) {
       
       val = analogRead(A0) / 4;   // read the input pin
