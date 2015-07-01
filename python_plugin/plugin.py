@@ -64,6 +64,7 @@ class ArduinoHTTPRequestHandler(BaseHTTPRequestHandler):
          if query["action"][0] == "Register":
             action(channel, self._event.set)
             self._event.wait()
+            print "woke"
             self._event.clear()
             result = str(self.server.sensor_value(channel))
          else:
@@ -83,6 +84,8 @@ class ArduinoHTTPServer(ThreadingMixIn, HTTPServer):
           "On": arduino.on,
           "Off": arduino.off,
           "Rev": arduino.reverse,
+          "FadeIn": arduino.fade_in,
+          "FadeOut": arduino.fade_out,
           "Register": arduino.register,
           "Poll": arduino.poll,
           "Low": arduino.low,

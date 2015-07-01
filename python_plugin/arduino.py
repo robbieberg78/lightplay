@@ -2,6 +2,7 @@
 import serial
 import time
 from datetime import datetime, timedelta
+from threading import Lock
 from Queue import Queue
 
 
@@ -67,7 +68,12 @@ class LightPlayer(object):
 
    def query(self, channel):
       self.write(self._compileMessage(channel, LightPlayer.QUERY))
-      result = self.read(1)
+      result = None
+      while not result:
+         try:
+            result = self.read(1)
+         except serial.SerialException:
+            pass
       return ord(result) if result else None
 
    def sensor_value(self, channel):
@@ -88,6 +94,16 @@ class LightPlayer(object):
    def high(self, channel):
       return self.write(self._compileMessage(channel, LightPlayer.SET_HIGH))
 
+   def fade_in(self, channel):
+      result = self.write(self._compileMessage(channel, LightPlayer.FADE_IN))
+      time.sleep(2.5)
+      return result
+
+   def fade_out(self, channel):
+      result = self.write(self._compileMessage(channel, LightPlayer.FADE_OUT))
+      time.sleep(2.5)
+      return result
+
    def off(self, channel):
       return self.write(self._compileMessage(channel, LightPlayer.OFF))
 
@@ -99,12 +115,14 @@ class SerialLightPlayer(LightPlayer):
 
    def __init__(self, port, baudrate):
       self._transport = serial.Serial(port=port, baudrate=baudrate)
+      self._lock = Lock()
       # you should handshake here rather than just waiting...
       time.sleep(5)
       LightPlayer.__init__(self)
 
    def write(self, payload):
-      return self._transport.write(payload)
+      with self._lock:
+         return self._transport.write(payload)
 
    def read(self, length, timeout=0):
       if timeout != self._transport.timeout:
