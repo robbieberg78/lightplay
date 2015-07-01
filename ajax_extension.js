@@ -125,7 +125,7 @@
       sendall(channel, "FadeIn", callback);
    };
 
-   ext.fade_in = function(channel, callback) {
+   ext.fade_out = function(channel, callback) {
       sendall(channel, "FadeOut", callback);
    };
 
