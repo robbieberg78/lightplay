@@ -107,32 +107,40 @@ void loop() {
       if (channel == 0) { // channel 0 talks to all four outputs
         digitalWrite(ch1a, bitRead(dirstate,1));
         digitalWrite(ch1b, !bitRead(dirstate,1));
+        digitalWrite(ch1e, HIGH);
         digitalWrite(ch2a, bitRead(dirstate,2));
         digitalWrite(ch2b, !bitRead(dirstate,2));
+        digitalWrite(ch2e, HIGH);
         digitalWrite(ch3a, bitRead(dirstate,3));
         digitalWrite(ch3b, !bitRead(dirstate,3));
+        digitalWrite(ch3e, HIGH);
         digitalWrite(ch4a, bitRead(dirstate,4));
         digitalWrite(ch4b, !bitRead(dirstate,4));
+        digitalWrite(ch4e, HIGH);
         
       }
       if (channel == 1) {
         digitalWrite(ch1a, bitRead(dirstate,1));
         digitalWrite(ch1b, !bitRead(dirstate,1));
+        digitalWrite(ch1e, HIGH);
         }
 
       if (channel == 2) {
         digitalWrite(ch2a, bitRead(dirstate,2));
         digitalWrite(ch2b, !bitRead(dirstate,2));
+        digitalWrite(ch2e, HIGH);
         }
 
        if (channel == 3) {
          digitalWrite(ch3a, bitRead(dirstate,3));
          digitalWrite(ch3b, !bitRead(dirstate,3));
+         digitalWrite(ch3e, HIGH);
         }
 
        if (channel == 4) {
         digitalWrite(ch4a, bitRead(dirstate,4));
         digitalWrite(ch4b, !bitRead(dirstate,4));
+        digitalWrite(ch4e, HIGH);
         }    
       break;
       
