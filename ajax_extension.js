@@ -121,6 +121,15 @@
       sendall(channel, level, callback);
    };
 
+   ext.fade_in = function(channel, callback) {
+      sendall(channel, "FadeIn", callback);
+   };
+
+   ext.fade_in = function(channel, callback) {
+      sendall(channel, "FadeOut", callback);
+   };
+
+
    var descriptor = {
       blocks: [
          ['w', 'Turn  %n on', 'send_on', 1],
@@ -129,8 +138,8 @@
          ['w', 'Turn all off', 'send_all_off'],
          ['w', 'Reverse  %n', 'send_rev', 1],
          ['w', 'Set channel %n to %m.power power', 'set_power', 1, 'High'],
-         //         ['w', 'Fade in channel %n', 'fade_in', 1],
-         //         ['w', 'Fade out channel %n', 'fade_out', 1],
+         ['w', 'Fade in channel %n', 'fade_in', 1],
+         ['w', 'Fade out channel %n', 'fade_out', 1],
          ['h', 'When sensor %n clips become connected', 'poll_for_on', 1],
          ['h', 'When sensor %n clips become disconnected', 'poll_for_off', 1],
          ['R', 'Sensor %n\'s value', 'poll', 1]
