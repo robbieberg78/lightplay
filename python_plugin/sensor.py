@@ -56,7 +56,6 @@ class EdgeTriggeredSensor(EventSensor):
 
    def poll(self):
       if self._state != self._last_state:
-         print "edge"
          self._last_state = self._state
          self.raise_event()
       return self._state

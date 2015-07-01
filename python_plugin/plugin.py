@@ -64,7 +64,6 @@ class ArduinoHTTPRequestHandler(BaseHTTPRequestHandler):
          if query["action"][0] == "Register":
             action(channel, self._event.set)
             self._event.wait()
-            print "woke"
             self._event.clear()
             result = str(self.server.sensor_value(channel))
          else:
