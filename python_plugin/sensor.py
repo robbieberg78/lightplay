@@ -14,14 +14,25 @@ poll which updates the sensor state'''
 
 class BaseSensor(object):
 
+   def __init__(self):
+      self.__on_update = Event()
+
    def register(self, target, *args, **kwargs):
       raise NotImplementedError
 
    def poll(self):
       raise NotImplementedError
 
-   def sensor_value(self):
+   def update(self, value):
       raise NotImplementedError
+
+   def wait(self):
+      self.__on_update.wait()
+      self.__on_update.clear()
+
+   def on_update(self):
+      self.__on_update.set()
+
 
 '''Now, we'll start defining some actual sensor behavior.  This particular sensor keep a list of interested functions.  Registered listeners will be 
 started on a new thread once the event is raised.  NOTE, poll is not implemented, yet...'''
@@ -31,11 +42,13 @@ class EventSensor(BaseSensor):
 
    def __init__(self):
       self._listeners = []
+      BaseSensor.__init__(self)
 
    def register(self, target, *args, **kwargs):
       self._listeners.append((target, args, kwargs))
 
    def raise_event(self):
+      print "RAISED"
       for target, args, kwargs in self._listeners:
          t = Thread(target=target, args=args, kwargs=kwargs)
          t.start()
@@ -50,9 +63,6 @@ class EdgeTriggeredSensor(EventSensor):
       EventSensor.__init__(self)
       self._state = False
       self._last_state = self._state
-
-   def sensor_value(self):
-      return self._state
 
    def poll(self):
       if self._state != self._last_state:
@@ -110,12 +120,14 @@ class ArduinoAnalogSensor(EventSensor):
       EventSensor.__init__(self)
 
    def poll(self):
-      result = self._arduino.query(self._channel)
-      if result is not None:
-         self.__last_value = result
-         self.raise_event()
-      return result
-
-   def sensor_value(self):
+      self._arduino.query(self._channel)
+      self.wait()
       return self.__last_value
+
+   def update(self, value):
+      if value == LightPlayer.EDGE:
+         self.raise_event()
+      else:
+         self.__last_value = value
+         self.on_update()
 

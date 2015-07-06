@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+import select
 import argparse
 import threading
 import sensor
@@ -15,7 +16,7 @@ import traceback
 def run_test_arduino(args):
    #   arduino = TestLightPlayer()
    arduino = SerialLightPlayer(args.serial_port, args.baudrate)
-   arduino.addSensor(sensor.ArduinoEdgeTriggeredSensor, 1)
+   arduino.addSensor(sensor.ArduinoAnalogSensor, 1)
    arduino.addSensor(sensor.ArduinoAnalogSensor, 2)
    return arduino
 
@@ -65,7 +66,7 @@ class ArduinoHTTPRequestHandler(BaseHTTPRequestHandler):
             action(channel, self._event.set)
             self._event.wait()
             self._event.clear()
-            result = str(self.server.sensor_value(channel))
+            result = "True"
          else:
             result = action(channel)
          print "RESULT: ", result
@@ -93,8 +94,6 @@ class ArduinoHTTPServer(ThreadingMixIn, HTTPServer):
       }
       HTTPServer.__init__(self, *args, **kwargs)
 
-   def sensor_value(self, channel):
-      return self._arduino.sensor_value(channel)
 
 if __name__ == "__main__":
    #   run_sensors()
@@ -123,6 +122,7 @@ if __name__ == "__main__":
    t.daemon = True
    t.start()
    while True:
-      arduino.poll()
-      time.sleep(0.1)
+      read_fd, write_fd, x_fd = select.select([arduino], [], [], .1)
+      if read_fd:
+         arduino.update()
 

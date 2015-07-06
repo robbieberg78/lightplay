@@ -17,6 +17,7 @@ class LightPlayer(object):
    SET_MED = 6
    SET_HIGH = 7
    QUERY = 8
+   EDGE = 9
 
    def __init__(self):
       self._sensors = {}
@@ -25,6 +26,9 @@ class LightPlayer(object):
       raise NotImplementedError
 
    def read(self, length, timeout=0):
+      raise NotImplementedError
+
+   def fileno(self):
       raise NotImplementedError
 
    def validChannel(self, channel):
@@ -68,19 +72,18 @@ class LightPlayer(object):
 
    def query(self, channel):
       self.write(self._compileMessage(channel, LightPlayer.QUERY))
-      result = None
-      while not result:
-         try:
-            result = self.read(1)
-         except serial.SerialException:
-            pass
-      return ord(result) if result else None
 
-   def sensor_value(self, channel):
-      if channel in self._sensors:
-         return self._sensors[channel].sensor_value()
-      else:
-         return None
+   def update(self):
+      result = self.read(1)
+      if result:
+         op = ord(result)
+         if op < 3:
+            self._sensors[op].update(LightPlayer.EDGE)
+         else:
+            op -= 3
+            channel = (op / 100) + 1
+            value = op - ((channel - 1) * 100)
+            self._sensors[channel].update(value)
 
    def on(self, channel):
       return self.write(self._compileMessage(channel, LightPlayer.ON))
@@ -129,6 +132,9 @@ class SerialLightPlayer(LightPlayer):
          self._transport.timeout = timeout
       return self._transport.read(length)
 
+   def fileno(self):
+      return self._transport.fileno()
+
 
 class TestLightPlayer(LightPlayer):
 
@@ -156,6 +162,9 @@ class TestLightPlayer(LightPlayer):
             length -= 1
       finally:
          return payload
+
+   def fileno(self):
+      return 1
 
 
 class WifiLightPlayer(LightPlayer):
