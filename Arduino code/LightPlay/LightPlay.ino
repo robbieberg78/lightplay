@@ -60,7 +60,7 @@ void setup() {
 }
 
 void loop() {
-  if (Serial.available() == 0) {
+  if (Serial.available() > 0) {
     // if there is an incoming serial byte from Python use switch command to dispatch it
 
     incomingByte = Serial.read();
@@ -335,6 +335,7 @@ void loop() {
 
       case 8:
         // sensor1 is wired to Arduino analog pin A1
+        
         if (channel == 1) {
 
           val = analogRead(A1) / 4;   // read the input pin
@@ -364,4 +365,4 @@ void loop() {
   oldsensor2 = newsensor2;
   delay(50); // to eliminate effects of switch bounce
 } // end of global loop
-q
+
