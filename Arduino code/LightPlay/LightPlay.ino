@@ -364,4 +364,4 @@ void loop() {
   oldsensor2 = newsensor2;
   delay(50); // to eliminate effects of switch bounce
 } // end of global loop
-
+q
