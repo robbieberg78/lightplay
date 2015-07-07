@@ -94,20 +94,10 @@
       };
    }
 
-
    ext.poll_for_on = function(channel) {
       if (manager.register_and_poll(channel)) {
          console.log(manager.sensors[channel].data);
          var result = manager.sensors[channel].data === "True";
-         manager.sensors[channel].data = "";
-         return result;
-      }
-   };
-
-   ext.poll_for_off = function(channel) {
-      if (manager.register_and_poll(channel)) {
-         console.log(manager.sensors[channel].data);
-         var result = manager.sensors[channel].data === "False";
          manager.sensors[channel].data = "";
          return result;
       }
@@ -141,7 +131,6 @@
          ['w', 'Fade in channel %n', 'fade_in', 1],
          ['w', 'Fade out channel %n', 'fade_out', 1],
          ['h', 'When sensor %n clips become connected', 'poll_for_on', 1],
-         ['h', 'When sensor %n clips become disconnected', 'poll_for_off', 1],
          ['R', 'Sensor %n\'s value', 'poll', 1]
       ],
 
