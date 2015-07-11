@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+import threading
 import serial
 import time
 from datetime import datetime, timedelta
@@ -18,14 +19,14 @@ class Transport(object):
       raise NotImplementedError
 
 
-class SerialTransport(object):
+class SerialTransport(Transport):
 
    def __init__(self, port, baudrate):
       self._serial = serial.Serial(port=port, baudrate=baudrate)
       self._lock = Lock()
       # you should handshake here rather than just waiting...
       time.sleep(5)
-      LightPlayer.__init__(self)
+      Transport.__init__(self)
 
    def write(self, payload):
       with self._lock:
@@ -83,7 +84,7 @@ class BtLight(Device):
    def _compileMessage(self, action, color=None):
       if color is None:
          color = BtLight.Color.NULL
-      return (color << 4 | action)
+      return (int(color) << 4 | int(action))
 
    def off(self):
       return self.write(BtLight.OFF)
@@ -116,18 +117,29 @@ class LightPlayer(Device):
       return 0 <= channel <= 15
 
    def addSensor(self, cls, channel):
+      channel = int(channel)
       if not self.validChannel(channel):
          raise ValueError("Sensor must be bound to a valid channel")
       self._sensors[channel] = cls(self, channel)
 
    def register(self, channel, target, *args, **kwargs):
+      channel = int(channel)
       if not self.validChannel(channel) or channel not in self._sensors:
          raise ValueError("Must register behavior to a valid sensor.  Tried {0}, available {1}".format(
              channel, str(self._sensors.keys())))
       return self._sensors[channel].register(target, *args, **kwargs)
 
+   def register_and_wait(self, channel):
+      channel = int(channel)
+      event = threading.Event()
+      self.register(channel, event.set)
+      event.wait()
+      event.clear()
+      return "True"
+
    def poll(self, channel=None):
       if channel is not None:
+         channel = int(channel)
          if not self.validChannel(channel):
             raise ValueError("Must poll a valid channel")
          if channel in self._sensors:
@@ -139,6 +151,8 @@ class LightPlayer(Device):
    def _compileMessage(self, channel, action):
       # This makes it a little clearer what you're trying to accomplish
       # probably...
+      action = int(action)
+      channel = int(channel)
       if action >= (1 << 4) or action < 0:
          raise ValueError("Action overflow: action={0}".format(action))
       if not self.validChannel(channel):
@@ -152,7 +166,7 @@ class LightPlayer(Device):
          pass
 
    def query(self, channel):
-      self.write(self._compileMessage(channel, LightPlayer.QUERY))
+      self.write(channel, LightPlayer.QUERY)
 
    def update(self):
       result = self.read(1)

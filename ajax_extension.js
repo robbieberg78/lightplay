@@ -148,6 +148,24 @@
       send_obj(data_obj);
    };
 
+   ext.fade_color = function(color, callback) {
+      var color_code = descriptor.menus.colors.indexOf(color) + 1;
+      data_obj = {
+         action: "FadeTo",
+         color: color_code
+      };
+      send_obj(data_obj);
+   };
+
+   ext.bt_off = function(callback) {
+      data_obj = {
+         action: "BtOff"
+      };
+      send_obj(data_obj);
+   };
+
+
+
 
    var descriptor = {
       blocks: [
@@ -160,6 +178,8 @@
          ['w', 'Fade in channel %n', 'fade_in', 1],
          ['w', 'Fade out channel %n', 'fade_out', 1],
          ['w', 'Set light color to %m.colors', 'set_color', "Red"],
+         ['w', 'Fade light color to %m.colors', 'fade_color', "Red"],
+         ['w', 'Turn colored light off', 'bt_off'],
          ['h', 'When sensor %n clips become connected', 'poll_for_on', 1],
          ['R', 'Sensor %n\'s value', 'poll', 1]
       ],
@@ -168,7 +188,7 @@
       menus: {
          action: ['On', 'Off'],
          power: ['Low', 'Med', 'High'],
-         colors: ['Red', 'Blue']
+         colors: ['White', 'Blue', 'Teal', 'Green', 'Yellow', 'Orange', 'Red', 'Pink', 'Purple', 'Surprise']
       }
    };
 

@@ -8,16 +8,14 @@ import glob
 from arduino import SerialLightPlayer
 from SocketServer import ThreadingMixIn
 from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
-from urlparse import parse_qs
+from urlparse import urlparse, parse_qs
 import time
 import traceback
 
 
 def run_test_arduino(args):
    arduino = SerialLightPlayer(args.serial_port, args.baudrate)
-   bt_port = args.bt_devices[0] if args.bt_devices else "test"
-   bt = SerialLightPlayer(bt_port, args.baudrate)
-   devices = [arduino, bt]
+   devices = [arduino]  # , bt]
    arduino.addSensor(sensor.ArduinoAnalogSensor, 1)
    arduino.addSensor(sensor.ArduinoAnalogSensor, 2)
    actions = {
@@ -26,49 +24,28 @@ def run_test_arduino(args):
        "Rev": arduino.reverse,
        "FadeIn": arduino.fade_in,
        "FadeOut": arduino.fade_out,
-       "Register": arduino.register,
+       "Register": arduino.register_and_wait,
        "Poll": arduino.poll,
        "Low": arduino.low,
        "Med": arduino.med,
-       "High": arduino.high,
-       "Set": bt.set,
-       "BtOff": bt.off,
-       "FadeTo", bt.fade_to
+       "High": arduino.high
    }
-
+   if args.bt_devices:
+      bt_port = args.bt_devices[0]
+      bt = SerialLightPlayer(bt_port, args.baudrate)
+      bt_actions = {
+          "Set": bt.set,
+          "BtOff": bt.off,
+          "FadeTo": bt.fade_to
+      }
+      devices.append(bt)
+      actions.update(bt_actions)
    return actions, devices
-
-
-def run_sensors():
-   print "ctrl-c at any time to exit"
-   print "background threads are not daemonized, and will finish execution before program exit"
-   a = sensor.PromptingEdgeTriggeredSensor("sensor a")
-   b = sensor.PromptingEdgeTriggeredSensor("sensor b")
-   sensors = [a, b]
-   # register behaviors here.
-   sensors[0].register(test_function, "hello", msg2="world")
-   sensors[1].register(test_function, "foo", "bar")
-   # poll forever
-   while True:
-      for s in sensors:
-         # holy polymorphism batman!  In this example, I happen to have 2 sensors of the same type, but since all sensors define register and poll,
-         # The list of sensors could have sensors of any type and it would
-         # still work!
-         s.poll()
-
-
-def test_function(msg1, msg2):
-   print msg1
-   # prove to me we're on a separate thread by not blocking the main thread while sleeping
-   # arduino.reverse(9)
-   time.sleep(2)
-   print msg2
 
 
 class ArduinoHTTPRequestHandler(BaseHTTPRequestHandler):
 
    def __init__(self, *args, **kwargs):
-      self._event = threading.Event()
       BaseHTTPRequestHandler.__init__(self, *args, **kwargs)
 
    def do_GET(self):
@@ -76,17 +53,16 @@ class ArduinoHTTPRequestHandler(BaseHTTPRequestHandler):
       self.send_header('Access-Control-Allow-Origin', '*')
       self.send_header('Content-type', 'text/html')
       self.end_headers()
-      query = parse_qs(self.path.strip("/?"))
-      action = self.server.actions[query["action"][0]]
-      channel = int(query["channel"][0])
+      query = parse_qs(urlparse(self.path)[4])
+      for field, value in query.items():
+         if len(value) == 1:
+            query[field] = value[0]
+      print query
+      action_name = query.pop("action")
+      action = self.server.actions[action_name]
+      channel = int(query["channel"])
       try:
-         if query["action"][0] == "Register":
-            action(channel, self._event.set)
-            self._event.wait()
-            self._event.clear()
-            result = "True"
-         else:
-            result = action(channel)
+         result = action(**query)
          print "RESULT: ", result
          self.wfile.write(result)
       except Exception as e:
@@ -135,7 +111,8 @@ if __name__ == "__main__":
    t.daemon = True
    t.start()
    while True:
-      read_fd, write_fd, x_fd = select.select(devices, [], [], .1)
-      if read_fd:
-         arduino.update()
+      read_fds, write_fds, x_fds = select.select(devices, [], [], .1)
+      if read_fds:
+         for device in read_fds:
+            device.update()
 
