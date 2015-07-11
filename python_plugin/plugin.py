@@ -5,7 +5,7 @@ import threading
 import sensor
 import time
 import glob
-from arduino import TestLightPlayer, SerialLightPlayer
+from arduino import SerialLightPlayer
 from SocketServer import ThreadingMixIn
 from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
 from urlparse import parse_qs
@@ -14,11 +14,29 @@ import traceback
 
 
 def run_test_arduino(args):
-   #   arduino = TestLightPlayer()
    arduino = SerialLightPlayer(args.serial_port, args.baudrate)
+   bt_port = args.bt_devices[0] if args.bt_devices else "test"
+   bt = SerialLightPlayer(bt_port, args.baudrate)
+   devices = [arduino, bt]
    arduino.addSensor(sensor.ArduinoAnalogSensor, 1)
    arduino.addSensor(sensor.ArduinoAnalogSensor, 2)
-   return arduino
+   actions = {
+       "On": arduino.on,
+       "Off": arduino.off,
+       "Rev": arduino.reverse,
+       "FadeIn": arduino.fade_in,
+       "FadeOut": arduino.fade_out,
+       "Register": arduino.register,
+       "Poll": arduino.poll,
+       "Low": arduino.low,
+       "Med": arduino.med,
+       "High": arduino.high,
+       "Set": bt.set,
+       "BtOff": bt.off,
+       "FadeTo", bt.fade_to
+   }
+
+   return actions, devices
 
 
 def run_sensors():
@@ -78,20 +96,8 @@ class ArduinoHTTPRequestHandler(BaseHTTPRequestHandler):
 
 class ArduinoHTTPServer(ThreadingMixIn, HTTPServer):
 
-   def __init__(self, arduino, *args, **kwargs):
-      self._arduino = arduino
-      self.actions = {
-          "On": arduino.on,
-          "Off": arduino.off,
-          "Rev": arduino.reverse,
-          "FadeIn": arduino.fade_in,
-          "FadeOut": arduino.fade_out,
-          "Register": arduino.register,
-          "Poll": arduino.poll,
-          "Low": arduino.low,
-          "Med": arduino.med,
-          "High": arduino.high
-      }
+   def __init__(self, actions, *args, **kwargs):
+      self.actions = actions
       HTTPServer.__init__(self, *args, **kwargs)
 
 
@@ -101,6 +107,8 @@ if __name__ == "__main__":
    parser.add_argument('--port', '-p', type=int, default=8000)
    parser.add_argument('--ip', '-i', default='localhost')
    parser.add_argument('--serial-port', '-s', dest="serial_port")
+   parser.add_argument(
+       '--bt-device', nargs='*', default=[], dest='bt_devices')
    parser.add_argument('--baudrate', '-b', type=int, default=9600)
    args = parser.parse_args()
    if not args.serial_port:
@@ -114,15 +122,20 @@ if __name__ == "__main__":
       else:
          raise RuntimeError(
              "Failed to detect connected serial devices.  If one is available, specify with --serial-port")
-
-   arduino = run_test_arduino(args)
+   if not args.bt_devices:
+      # look for valid serial devices, if more than one is available, choose
+      # one but notify the user
+      bt_list = glob.glob("/dev/*FireFly*")
+      if bt_list:
+         args.bt_devices = bt_devices
+   actions, devices = run_test_arduino(args)
    server = ArduinoHTTPServer(
-       arduino, (args.ip, args.port), ArduinoHTTPRequestHandler)
+       actions, (args.ip, args.port), ArduinoHTTPRequestHandler)
    t = threading.Thread(target=server.serve_forever)
    t.daemon = True
    t.start()
    while True:
-      read_fd, write_fd, x_fd = select.select([arduino], [], [], .1)
+      read_fd, write_fd, x_fd = select.select(devices, [], [], .1)
       if read_fd:
          arduino.update()
 

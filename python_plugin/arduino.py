@@ -6,7 +6,96 @@ from threading import Lock
 from Queue import Queue
 
 
-class LightPlayer(object):
+class Transport(object):
+
+   def write(self, payload):
+      raise NotImplementedError
+
+   def read(self, length, timeout=0):
+      raise NotImplementedError
+
+   def fileno(self):
+      raise NotImplementedError
+
+
+class SerialTransport(object):
+
+   def __init__(self, port, baudrate):
+      self._serial = serial.Serial(port=port, baudrate=baudrate)
+      self._lock = Lock()
+      # you should handshake here rather than just waiting...
+      time.sleep(5)
+      LightPlayer.__init__(self)
+
+   def write(self, payload):
+      with self._lock:
+         return self._serial.write(payload)
+
+   def read(self, length, timeout=0):
+      if timeout != self._serial.timeout:
+         self._serial.timeout = timeout
+      return self._serial.read(length)
+
+   def fileno(self):
+      return self._serial.fileno()
+
+
+class Device(object):
+
+   def __init__(self, transport):
+      self._transport = transport
+
+   def _compileMessage(self, *args, **kwargs):
+      raise NotImplementedError
+
+   def write(self, *args, **kwargs):
+      return self._transport.write(self._compileMessage(*args, **kwargs))
+
+   def read(self, length, timeout=0):
+      return self._transport.read(length, timeout)
+
+   def fileno(self):
+      return self._transport.fileno()
+
+
+class BtLight(Device):
+
+   OFF = 0
+   SET = 1
+   FADE_TO = 2
+
+   class Color(object):
+      NULL = 0
+      WHITE = 1
+      BLUE = 2
+      TEAL = 3
+      GREEN = 4
+      YELLOW = 5
+      ORANGE = 6
+      RED = 7
+      PINK = 8
+      PURPLE = 9
+      SURPRISE = 10
+
+   def __init__(self, transport):
+      Device.__init__(self, transport)
+
+   def _compileMessage(self, action, color=None):
+      if color is None:
+         color = BtLight.Color.NULL
+      return (color << 4 | action)
+
+   def off(self):
+      return self.write(BtLight.OFF)
+
+   def set(self, color):
+      return self.write(BtLight.SET, color)
+
+   def fade_to(self, color):
+      return self.write(BtLight.FADE_TO, color)
+
+
+class LightPlayer(Device):
 
    OFF = 0
    ON = 1
@@ -19,17 +108,9 @@ class LightPlayer(object):
    QUERY = 8
    EDGE = 9
 
-   def __init__(self):
+   def __init__(self, transport):
       self._sensors = {}
-
-   def write(self, payload):
-      raise NotImplementedError
-
-   def read(self, length, timeout=0):
-      raise NotImplementedError
-
-   def fileno(self):
-      raise NotImplementedError
+      Device.__init__(self, transport)
 
    def validChannel(self, channel):
       return 0 <= channel <= 15
@@ -86,85 +167,38 @@ class LightPlayer(object):
             self._sensors[channel].update(value)
 
    def on(self, channel):
-      return self.write(self._compileMessage(channel, LightPlayer.ON))
+      return self.write(channel, LightPlayer.ON)
 
    def low(self, channel):
-      return self.write(self._compileMessage(channel, LightPlayer.SET_LOW))
+      return self.write(channel, LightPlayer.SET_LOW)
 
    def med(self, channel):
-      return self.write(self._compileMessage(channel, LightPlayer.SET_MED))
+      return self.write(channel, LightPlayer.SET_MED)
 
    def high(self, channel):
-      return self.write(self._compileMessage(channel, LightPlayer.SET_HIGH))
+      return self.write(channel, LightPlayer.SET_HIGH)
 
    def fade_in(self, channel):
-      result = self.write(self._compileMessage(channel, LightPlayer.FADE_IN))
+      result = self.write(channel, LightPlayer.FADE_IN)
       time.sleep(2.5)
       return result
 
    def fade_out(self, channel):
-      result = self.write(self._compileMessage(channel, LightPlayer.FADE_OUT))
+      result = self.write(channel, LightPlayer.FADE_OUT)
       time.sleep(2.5)
       return result
 
    def off(self, channel):
-      return self.write(self._compileMessage(channel, LightPlayer.OFF))
+      return self.write(channel, LightPlayer.OFF)
 
    def reverse(self, channel):
-      return self.write(self._compileMessage(channel, LightPlayer.REVERSE))
+      return self.write(channel, LightPlayer.REVERSE)
 
 
 class SerialLightPlayer(LightPlayer):
 
    def __init__(self, port, baudrate):
-      self._transport = serial.Serial(port=port, baudrate=baudrate)
-      self._lock = Lock()
-      # you should handshake here rather than just waiting...
-      time.sleep(5)
-      LightPlayer.__init__(self)
-
-   def write(self, payload):
-      with self._lock:
-         return self._transport.write(payload)
-
-   def read(self, length, timeout=0):
-      if timeout != self._transport.timeout:
-         self._transport.timeout = timeout
-      return self._transport.read(length)
-
-   def fileno(self):
-      return self._transport.fileno()
-
-
-class TestLightPlayer(LightPlayer):
-
-   def __init__(self):
-      self._read_queue = Queue()
-      self._responses = {"on": LightPlayer.ON, "off": LightPlayer.OFF}
-      LightPlayer.__init__(self)
-
-   def write(self, payload):
-      channel = ord(payload) >> 4
-      op_code = ord(payload) % (1 << 4)
-      print "channel", channel, "got message", op_code
-      print
-      if op_code == LightPlayer.QUERY:
-         response = raw_input(
-             "response to query on channel {0}> ".format(channel))
-         if response:
-            self._read_queue.put(self._responses[response])
-
-   def read(self, length, timeout=0):
-      payload = ""
-      try:
-         while length > 0:
-            payload += chr(int(self._read_queue.get()))
-            length -= 1
-      finally:
-         return payload
-
-   def fileno(self):
-      return 1
+      LightPlayer.__init__(self, SerialTransport(port, baudrate))
 
 
 class WifiLightPlayer(LightPlayer):
