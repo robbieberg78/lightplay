@@ -215,6 +215,12 @@ class SerialLightPlayer(LightPlayer):
       LightPlayer.__init__(self, SerialTransport(port, baudrate))
 
 
+class SerialBtLight(BtLight):
+
+   def __init__(self, port, baudrate):
+      BtLight.__init__(self, SerialTransport(port, baudrate))
+
+
 class WifiLightPlayer(LightPlayer):
    pass
   # specify correct transport, expose proper options in __init__

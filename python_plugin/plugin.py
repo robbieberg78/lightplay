@@ -5,7 +5,7 @@ import threading
 import sensor
 import time
 import glob
-from arduino import SerialLightPlayer
+from arduino import SerialLightPlayer, SerialBtLight
 from SocketServer import ThreadingMixIn
 from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
 from urlparse import urlparse, parse_qs
@@ -32,7 +32,7 @@ def run_test_arduino(args):
    }
    if args.bt_devices:
       bt_port = args.bt_devices[0]
-      bt = SerialLightPlayer(bt_port, args.baudrate)
+      bt = SerialBtLight(bt_port, args.baudrate)
       bt_actions = {
           "Set": bt.set,
           "BtOff": bt.off,
