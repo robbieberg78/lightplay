@@ -145,7 +145,7 @@
          action: "Set",
          color: color_code
       };
-      send_obj(data_obj);
+      send_obj(data_obj, callback);
    };
 
    ext.fade_color = function(color, callback) {
@@ -154,14 +154,14 @@
          action: "FadeTo",
          color: color_code
       };
-      send_obj(data_obj);
+      send_obj(data_obj, callback);
    };
 
    ext.bt_off = function(callback) {
       data_obj = {
          action: "BtOff"
       };
-      send_obj(data_obj);
+      send_obj(data_obj, callback);
    };
 
 

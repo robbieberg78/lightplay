@@ -84,7 +84,7 @@ class BtLight(Device):
    def _compileMessage(self, action, color=None):
       if color is None:
          color = BtLight.Color.NULL
-      return (int(color) << 4 | int(action))
+      return chr((int(color) << 4 | int(action)))
 
    def off(self):
       return self.write(BtLight.OFF)

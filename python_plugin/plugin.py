@@ -15,7 +15,7 @@ import traceback
 
 def run_test_arduino(args):
    arduino = SerialLightPlayer(args.serial_port, args.baudrate)
-   devices = [arduino]  # , bt]
+   devices = [arduino]
    arduino.addSensor(sensor.ArduinoAnalogSensor, 1)
    arduino.addSensor(sensor.ArduinoAnalogSensor, 2)
    actions = {
@@ -60,7 +60,6 @@ class ArduinoHTTPRequestHandler(BaseHTTPRequestHandler):
       print query
       action_name = query.pop("action")
       action = self.server.actions[action_name]
-      channel = int(query["channel"])
       try:
          result = action(**query)
          print "RESULT: ", result
@@ -103,7 +102,7 @@ if __name__ == "__main__":
       # one but notify the user
       bt_list = glob.glob("/dev/*FireFly*")
       if bt_list:
-         args.bt_devices = bt_devices
+         args.bt_devices = bt_list
    actions, devices = run_test_arduino(args)
    server = ArduinoHTTPServer(
        actions, (args.ip, args.port), ArduinoHTTPRequestHandler)
