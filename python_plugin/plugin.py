@@ -21,6 +21,7 @@ def run_test_arduino(args):
    actions = {
        "On": arduino.on,
        "Off": arduino.off,
+       "Toggle": arduino.toggle,
        "Rev": arduino.reverse,
        "FadeIn": arduino.fade_in,
        "FadeOut": arduino.fade_out,
@@ -40,6 +41,11 @@ def run_test_arduino(args):
       }
       devices.append(bt)
       actions.update(bt_actions)
+   else:
+      print "Warning:  No bluetooth devices were detected"
+   if not devices:
+      raise RuntimeError(
+          "Plugin was unable to detect any devices, please check wired connections and the state of bluetooth devices")
    return actions, devices
 
 
@@ -94,9 +100,6 @@ if __name__ == "__main__":
          args.serial_port = serial_list[0]
          if len(serial_list) > 1:
             print "from available devices {0}, selected {1}.  Run with --serial-port to specify another device.".format(serial_list, args.serial_port)
-      else:
-         raise RuntimeError(
-             "Failed to detect connected serial devices.  If one is available, specify with --serial-port")
    if not args.bt_devices:
       # look for valid serial devices, if more than one is available, choose
       # one but notify the user

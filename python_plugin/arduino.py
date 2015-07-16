@@ -108,6 +108,7 @@ class LightPlayer(Device):
    SET_HIGH = 7
    QUERY = 8
    EDGE = 9
+   TOGGLE = 10
 
    def __init__(self, transport):
       self._sensors = {}
@@ -207,6 +208,9 @@ class LightPlayer(Device):
 
    def reverse(self, channel):
       return self.write(channel, LightPlayer.REVERSE)
+
+   def toggle(self, channel):
+      return self.write(channel, LightPlayer.TOGGLE)
 
 
 class SerialLightPlayer(LightPlayer):

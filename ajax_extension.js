@@ -78,6 +78,12 @@
       send_to_channel(channel, "Off", callback);
    };
 
+   ext.send_toggle = function(channel, callback) {
+      send_to_channel(channel, "Toggle", callback);
+   };
+
+
+
    ext.send_all_on = function(callback) {
       send_to_channel(0, "On", callback);
    };
@@ -185,6 +191,7 @@
       blocks: [
          ['w', 'Turn  %m.channels on', 'send_on', "A"],
          ['w', 'Turn  %m.channels off', 'send_off', "A"],
+         ['w', 'Toggle  %m.channels', 'send_toggle', "A"],
          ['w', 'Turn all on', 'send_all_on'],
          ['w', 'Turn all off', 'send_all_off'],
          ['w', 'Reverse  %m.channels', 'send_rev', "A"],
