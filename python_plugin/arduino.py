@@ -173,13 +173,17 @@ class LightPlayer(Device):
       result = self.read(1)
       if result:
          op = ord(result)
+         print op
          if op < 3:
             self._sensors[op].update(LightPlayer.EDGE)
          else:
-            op -= 3
-            channel = (op / 100) + 1
-            value = op - ((channel - 1) * 100)
-            self._sensors[channel].update(value)
+            if op <= 103:
+               op -= 3
+               channel = 1
+            else:
+               op -= 104
+               channel = 2
+            self._sensors[channel].update(op)
 
    def on(self, channel):
       return self.write(channel, LightPlayer.ON)
