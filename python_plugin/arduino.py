@@ -173,7 +173,6 @@ class LightPlayer(Device):
       result = self.read(1)
       if result:
          op = ord(result)
-         print op
          if op < 3:
             self._sensors[op].update(LightPlayer.EDGE)
          else:
