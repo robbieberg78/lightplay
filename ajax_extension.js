@@ -57,14 +57,14 @@
    }
 
    function send_to_channel(channel, action, callback) {
-      if (channel in descriptor.menus.channels) {
+      if (descriptor.menus.channels.indexOf(channel) >= 0) {
          channel = descriptor.menus.channels.indexOf(channel);
       }
       send_to(channel, action, callback);
    }
 
    function send_to_sensor(sensor, action, callback) {
-      if (sensor in descriptor.menus.sensors) {
+      if (descriptor.menus.sensors.indexOf(sensor) >= 0) {
          sensor = descriptor.menus.sensors.indexOf(sensor) + 1;
       }
       send_to(sensor, action, callback);
