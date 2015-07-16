@@ -56,47 +56,61 @@
       }
    }
 
+   function send_to_channel(channel, action, callback) {
+      if (channel in descriptor.menus.channels) {
+         channel = descriptor.menus.channels.indexOf(channel);
+      }
+      send_to(channel, action, callback);
+   }
+
+   function send_to_sensor(sensor, action, callback) {
+      if (sensor in descriptor.menus.sensors) {
+         sensor = descriptor.menus.sensors.indexOf(sensor) + 1;
+      }
+      send_to(sensor, action, callback);
+   }
+
    ext.send_on = function(channel, callback) {
-      send_to(channel, "On", callback);
+      send_to_channel(channel, "On", callback);
    };
 
    ext.send_off = function(channel, callback) {
-      send_to(channel, "Off", callback);
+      send_to_channel(channel, "Off", callback);
    };
 
    ext.send_all_on = function(callback) {
-      send_to(0, "On", callback);
+      send_to_channel(0, "On", callback);
    };
 
    ext.send_all_off = function(callback) {
-      send_to(0, "Off", callback);
+      send_to_channel(0, "Off", callback);
    };
 
    ext.send_rev = function(channel, callback) {
-      send_to(channel, "Rev", callback);
+      send_to_channel(channel, "Rev", callback);
    };
 
-   function register(channel, callback) {
-      send_to(channel, "Register", callback);
+   function register(sensor, callback) {
+      send_to_sensor(sensor, "Register", callback);
    }
 
    function sensor_manager() {
       this.sensors = {};
-      this.register_and_poll = function(channel) {
-         if (!(channel in this.sensors)) {
-            this.sensors[channel] = {
+      this.register_and_poll = function(sensor) {
+         if (!(sensor in this.sensors)) {
+            this.sensors[sensor] = {
                state: false,
                listeners: 1
             };
-            register(channel, get_callback(channel));
+            register(sensor, get_callback(sensor));
             return false;
          }
-         var sensor = this.sensors[channel];
-         if (sensor.state) {
-            if (sensor.listeners === 0) {
-               sensor.listeners += 1;
-               sensor.state = false;
-               register(channel, get_callback(channel));
+         var sensor_data = this.sensors[sensor];
+         if (sensor_data.state) {
+            if (sensor_data.listeners === 0) {
+               sensor_data.listeners += 1;
+               sensor_data.state = false;
+               register(sensor, get_callback(sensor));
             }
             return true;
          }
@@ -114,29 +128,29 @@
       };
    }
 
-   ext.poll_for_on = function(channel) {
-      if (manager.register_and_poll(channel)) {
-         console.log(manager.sensors[channel].data);
-         var result = manager.sensors[channel].data === "True";
-         manager.sensors[channel].data = "";
+   ext.poll_for_on = function(sensor) {
+      if (manager.register_and_poll(sensor)) {
+         console.log(manager.sensors[sensor].data);
+         var result = manager.sensors[sensor].data === "True";
+         manager.sensors[sensor].data = "";
          return result;
       }
    };
 
-   ext.poll = function(channel, callback) {
-      send_to(channel, "Poll", callback);
+   ext.poll = function(sensor, callback) {
+      send_to_sensor(sensor, "Poll", callback);
    };
 
    ext.set_power = function(channel, level, callback) {
-      send_to(channel, level, callback);
+      send_to_channel(channel, level, callback);
    };
 
    ext.fade_in = function(channel, callback) {
-      send_to(channel, "FadeIn", callback);
+      send_to_channel(channel, "FadeIn", callback);
    };
 
    ext.fade_out = function(channel, callback) {
-      send_to(channel, "FadeOut", callback);
+      send_to_channel(channel, "FadeOut", callback);
    };
 
    ext.set_color = function(color, callback) {
@@ -169,26 +183,28 @@
 
    var descriptor = {
       blocks: [
-         ['w', 'Turn  %n on', 'send_on', 1],
-         ['w', 'Turn  %n off', 'send_off', 1],
+         ['w', 'Turn  %m.channels on', 'send_on', "A"],
+         ['w', 'Turn  %m.channels off', 'send_off', "A"],
          ['w', 'Turn all on', 'send_all_on'],
          ['w', 'Turn all off', 'send_all_off'],
-         ['w', 'Reverse  %n', 'send_rev', 1],
-         ['w', 'Set channel %n to %m.power power', 'set_power', 1, 'High'],
-         ['w', 'Fade in channel %n', 'fade_in', 1],
-         ['w', 'Fade out channel %n', 'fade_out', 1],
-         ['w', 'Set light color to %m.colors', 'set_color', "Red"],
-         ['w', 'Fade light color to %m.colors', 'fade_color', "Red"],
-         ['w', 'Turn colored light off', 'bt_off'],
-         ['h', 'When sensor %n clips become connected', 'poll_for_on', 1],
-         ['R', 'Sensor %n\'s value', 'poll', 1]
+         ['w', 'Reverse  %m.channels', 'send_rev', "A"],
+         ['w', 'Set channel %m.channels to %m.power power', 'set_power', "A", 'High'],
+         ['w', 'Fade in channel %m.channels', 'fade_in', "A"],
+         ['w', 'Fade out channel %m.channels', 'fade_out', "A"],
+         ['w', 'Set rainbow light color to %m.colors', 'set_color', "Red"],
+         ['w', 'Fade rainbow light color to %m.colors', 'fade_color', "Red"],
+         ['w', 'Turn rainbow light off', 'bt_off'],
+         ['h', 'When sensor %m.sensors clips become connected', 'poll_for_on', "Sensor A"],
+         ['R', 'Value of %m.sensors', 'poll', "Sensor A"]
       ],
 
       url: 'https://github.com/bsb20/scratch-to-serial/tree/gh-pages',
       menus: {
          action: ['On', 'Off'],
          power: ['Low', 'Med', 'High'],
-         colors: ['White', 'Blue', 'Teal', 'Green', 'Yellow', 'Orange', 'Red', 'Pink', 'Purple', 'Surprise']
+         colors: ['White', 'Blue', 'Teal', 'Green', 'Yellow', 'Orange', 'Red', 'Pink', 'Purple', 'Surprise'],
+         sensors: ["Sensor A", "Sensor B"],
+         channels: ["All", "A", "B", "C", "D"]
       }
    };
 
