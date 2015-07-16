@@ -189,19 +189,19 @@
 
    var descriptor = {
       blocks: [
-         ['w', 'Turn  %m.channels on', 'send_on', "A"],
-         ['w', 'Turn  %m.channels off', 'send_off', "A"],
+         ['w', 'Turn on  %m.channels', 'send_on', "A"],
+         ['w', 'Turn off  %m.channels', 'send_off', "A"],
          ['w', 'Toggle  %m.channels', 'send_toggle', "A"],
-         ['w', 'Turn all on', 'send_all_on'],
-         ['w', 'Turn all off', 'send_all_off'],
-         ['w', 'Reverse  %m.channels', 'send_rev', "A"],
-         ['w', 'Set channel %m.channels to %m.power power', 'set_power', "A", 'High'],
-         ['w', 'Fade in channel %m.channels', 'fade_in', "A"],
-         ['w', 'Fade out channel %m.channels', 'fade_out', "A"],
+         ['w', 'Turn on all', 'send_all_on'],
+         ['w', 'Turn off all', 'send_all_off'],
+         ['w', 'Reverse motor  %m.channels', 'send_rev', "A"],
+         ['w', 'Set light %m.channels to %m.power power', 'set_power', "A", 'High'],
+         ['w', 'Fade in light %m.channels', 'fade_in', "A"],
+         ['w', 'Fade out light %m.channels', 'fade_out', "A"],
          ['w', 'Set rainbow light color to %m.colors', 'set_color', "Red"],
          ['w', 'Fade rainbow light color to %m.colors', 'fade_color', "Red"],
          ['w', 'Turn rainbow light off', 'bt_off'],
-         ['h', 'When sensor %m.sensors clips become connected', 'poll_for_on', "Sensor A"],
+         ['h', 'When sensor %m.sensors clips are connected', 'poll_for_on', "Sensor A"],
          ['R', 'Value of %m.sensors', 'poll', "Sensor A"]
       ],
 
