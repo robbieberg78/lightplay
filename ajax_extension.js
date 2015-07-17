@@ -211,7 +211,7 @@
          power: ['Low', 'Med', 'High'],
          colors: ['White', 'Blue', 'Teal', 'Green', 'Yellow', 'Orange', 'Red', 'Pink', 'Purple', 'Surprise'],
          sensors: ["Sensor A", "Sensor B"],
-         channels: ["All", "A", "B", "C", "D"]
+         channels: ["All", "A", "B", "C", "D"],
          channelsalt: ["A", "B", "C", "D"]
       }
    };
