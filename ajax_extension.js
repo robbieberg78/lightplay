@@ -191,13 +191,13 @@
       blocks: [
          ['w', 'Turn on  %m.channels', 'send_on', "A"],
          ['w', 'Turn off  %m.channels', 'send_off', "A"],
-         ['w', 'Toggle  %m.channels', 'send_toggle', "A"],
+         ['w', 'Toggle  %m.channelsalt', 'send_toggle', "A"],
          ['w', 'Turn on all', 'send_all_on'],
          ['w', 'Turn off all', 'send_all_off'],
          ['w', 'Reverse motor  %m.channels', 'send_rev', "A"],
          ['w', 'Set light %m.channels to %m.power power', 'set_power', "A", 'High'],
-         ['w', 'Fade in light %m.channels', 'fade_in', "A"],
-         ['w', 'Fade out light %m.channels', 'fade_out', "A"],
+         ['w', 'Fade in light %m.channelsalt', 'fade_in', "A"],
+         ['w', 'Fade out light %m.channelsalt', 'fade_out', "A"],
          ['w', 'Set rainbow light color to %m.colors', 'set_color', "Red"],
          ['w', 'Fade rainbow light color to %m.colors', 'fade_color', "Red"],
          ['w', 'Turn rainbow light off', 'bt_off'],
@@ -212,6 +212,7 @@
          colors: ['White', 'Blue', 'Teal', 'Green', 'Yellow', 'Orange', 'Red', 'Pink', 'Purple', 'Surprise'],
          sensors: ["Sensor A", "Sensor B"],
          channels: ["All", "A", "B", "C", "D"]
+         channelsalt: ["A", "B", "C", "D"]
       }
    };
 

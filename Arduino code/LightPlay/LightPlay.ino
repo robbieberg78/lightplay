@@ -26,6 +26,7 @@ int ch4b = 9; // v. 1.0 of layout has pins 8 and 9 swapped, need to rewire to th
 int ch4e = 5;
 
 int dirstate = 255;  // bitwise direction state
+int onstate = 0; // bitwise onstate state
 
 void setup() {
   Serial.begin(9600); // opens serial port, sets data rate to 9600 bps, same as Python
@@ -88,6 +89,7 @@ void loop() {
           digitalWrite(ch3b, LOW);
           digitalWrite(ch4a, LOW);
           digitalWrite(ch4b, LOW);
+
         }
         if (channel == 1) {
           digitalWrite(ch1a, LOW);
@@ -109,6 +111,16 @@ void loop() {
           digitalWrite(ch4b, LOW);
         }
 
+        if (channel == 0) {
+          onstate = 0; // all bits off
+        }
+
+        else {
+          onstate = bitClear(onstate, channel);
+        }
+
+
+
         break;
       case 1: // turn on port
         if (channel == 0) { // channel 0 talks to all four outputs
@@ -124,12 +136,12 @@ void loop() {
           digitalWrite(ch4a, bitRead(dirstate, 4));
           digitalWrite(ch4b, !bitRead(dirstate, 4));
           digitalWrite(ch4e, HIGH);
-
         }
         if (channel == 1) {
           digitalWrite(ch1a, bitRead(dirstate, 1));
           digitalWrite(ch1b, !bitRead(dirstate, 1));
           digitalWrite(ch1e, HIGH);
+
         }
 
         if (channel == 2) {
@@ -148,6 +160,14 @@ void loop() {
           digitalWrite(ch4a, bitRead(dirstate, 4));
           digitalWrite(ch4b, !bitRead(dirstate, 4));
           digitalWrite(ch4e, HIGH);
+        }
+
+        if (channel == 0) {
+          onstate = 255; // all bits on
+        }
+
+        else {
+          onstate = bitSet(onstate, channel);
         }
         break;
 
@@ -335,7 +355,7 @@ void loop() {
 
       case 8:
         // sensor1 is wired to Arduino analog pin A1
-        
+
         if (channel == 1) {
 
           val = analogRead(A1) / 4;   // read the input pin
@@ -351,6 +371,61 @@ void loop() {
         }
 
         break;
+
+      // command  9 used for edge detection in Python
+
+      case 10: // toggle on / off
+        if (channel == 1 || channel == 0) {
+          if (bitRead(onstate, 1)) {
+            digitalWrite(ch1a, LOW);
+            digitalWrite(ch1b, LOW);
+          }
+          else {
+            digitalWrite(ch1a, bitRead(dirstate, 1));
+            digitalWrite(ch1b, !bitRead(dirstate, 1));
+            digitalWrite(ch1e, HIGH);
+          }
+          onstate = onstate ^ 2; // xor to toggle bit 1
+        }
+        if (channel == 2 || channel == 0) {
+          if (bitRead(onstate, 2)) {
+            digitalWrite(ch2a, LOW);
+            digitalWrite(ch2b, LOW);
+          }
+          else {
+            digitalWrite(ch2a, bitRead(dirstate, 2));
+            digitalWrite(ch2b, !bitRead(dirstate, 2));
+            digitalWrite(ch2e, HIGH);
+          }
+          onstate = onstate ^ 4; // xor to toggle bit 2
+        }
+        if (channel == 3 || channel == 0) {
+          if (bitRead(onstate, 3)) {
+            digitalWrite(ch3a, LOW);
+            digitalWrite(ch3b, LOW);
+          }
+          else {
+            digitalWrite(ch3a, bitRead(dirstate, 3));
+            digitalWrite(ch3b, !bitRead(dirstate, 3));
+            digitalWrite(ch3e, HIGH);
+          }
+          onstate = onstate ^ 8; // xor to toggle bit 3
+        }
+        if (channel == 4 || channel == 0) {
+          if (bitRead(onstate, 4)) {
+            digitalWrite(ch4a, LOW);
+            digitalWrite(ch4b, LOW);
+          }
+          else {
+            digitalWrite(ch4a, bitRead(dirstate, 4));
+            digitalWrite(ch4b, !bitRead(dirstate, 4));
+            digitalWrite(ch4e, HIGH);
+          }
+          onstate = onstate ^ 16; // xor to toggle bit 4
+        }
+
+        break;
+
     } // end of switch
   } // end of  if incoming byte then dispatch
   newsensor1 = digitalRead(A1);
