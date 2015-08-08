@@ -54,6 +54,15 @@ void setup() {
   pinMode(ch1a, OUTPUT);
   pinMode(ch1b, OUTPUT);
   pinMode(ch1e, OUTPUT);
+  pinMode(ch2a, OUTPUT);
+  pinMode(ch2b, OUTPUT);
+  pinMode(ch2e, OUTPUT);
+  pinMode(ch3a, OUTPUT);
+  pinMode(ch3b, OUTPUT);
+  pinMode(ch3e, OUTPUT);
+  pinMode(ch4a, OUTPUT);
+  pinMode(ch4b, OUTPUT);
+  pinMode(ch4e, OUTPUT);
   pinMode(A0, INPUT_PULLUP);
   pinMode(A1, INPUT_PULLUP);
 
