@@ -145,7 +145,7 @@ void loop() {
           newredval = 0;
         }
 
-        if (color == 2) {  // slowly turn teal
+        if (color == 3) {  // slowly turn teal
           newwhiteval = 0;
           newblueval = 255;
           newgreenval = 50;
