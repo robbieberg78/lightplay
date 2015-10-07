@@ -277,12 +277,12 @@ class LightPlayer(SensingDevice):
 
    def fade_in(self, channel):
       result = self.write(channel, LightPlayer.FADE_IN)
-      time.sleep(2.5)
+      # time.sleep(2.5)
       return result
 
    def fade_out(self, channel):
       result = self.write(channel, LightPlayer.FADE_OUT)
-      time.sleep(2.5)
+      # time.sleep(2.5)
       return result
 
    def off(self, channel):
