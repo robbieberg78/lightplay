@@ -6,7 +6,6 @@ from arduino import LightPlayer
 import serial
 import time
 import struct
-
 '''This is the most general outline for what a sensor should do.  All sensors should be able to register a new behaviour
 which is slated to be run with some arguments.  Also, all sensors must be pollable.  That is, we can call some function
 poll which updates the sensor state'''
@@ -34,7 +33,7 @@ class BaseSensor(object):
       self.__on_update.set()
 
 
-'''Now, we'll start defining some actual sensor behavior.  This particular sensor keep a list of interested functions.  Registered listeners will be 
+'''Now, we'll start defining some actual sensor behavior.  This particular sensor keep a list of interested functions.  Registered listeners will be
 started on a new thread once the event is raised.  NOTE, poll is not implemented, yet...'''
 
 
@@ -53,7 +52,7 @@ class EventSensor(BaseSensor):
          t = Thread(target=target, args=args, kwargs=kwargs)
          t.start()
 
-'''Now, with the underlying machinery out of the way, we can define some sensor behavior.  Namely, this edge triggered sensor has a 
+'''Now, with the underlying machinery out of the way, we can define some sensor behavior.  Namely, this edge triggered sensor has a
 high and low state, and polling this sensor looks for changes in this state, raising events as neccessary'''
 
 
@@ -130,4 +129,23 @@ class ArduinoAnalogSensor(EventSensor):
       else:
          self.__last_value = value
          self.on_update()
+
+
+class MidiEventSensor(EventSensor):
+
+   def __init__(self, midi_device, midi_code):
+      self._midi_code = midi_code
+      self._midi_device = midi_device
+      self.__last_value = None
+      EventSensor.__init__(self)
+
+   def poll(self):
+      self.wait()
+      return self.__last_value
+
+   def update(self, value):
+      if value:
+         print "VALUE"
+         self.__last_Value = value
+         self.raise_event()
 

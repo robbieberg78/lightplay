@@ -6,6 +6,10 @@ from datetime import datetime, timedelta
 from threading import Lock
 from Queue import Queue
 
+import os
+import time
+from multiprocessing import Pipe, Process
+
 
 class Transport(object):
 
@@ -17,6 +21,48 @@ class Transport(object):
 
    def fileno(self):
       raise NotImplementedError
+
+
+class BlockingMidi(Transport):
+
+   def __init__(self, midi_in_id):
+      self.pipe, child_pipe = Pipe()
+      self.process = Process(
+          target=self.__run_polling_proc, args=(child_pipe, midi_in_id))
+      self.process.start()
+
+   def read(self, length, timeout=0):
+      recvd = []
+      while len(recvd) < length:
+         recvd += self.pipe.recv()
+      print recvd
+      return recvd
+
+   def fileno(self):
+      return self.pipe.fileno()
+
+   def close(self):
+      self.pipe.send(0)
+      while True:
+         self.process.join(.1)
+
+   def __del__(self):
+      self.close()
+
+   def __run_polling_proc(self, child_pipe, midi_id):
+      import pygame.midi as midi
+      midi.init()
+      midi_dev = None
+      for i in xrange(midi.get_count()):
+         info = midi.get_device_info(i)
+         if info[1] == midi_id and info[2]:
+            midi_dev = midi.Input(i)
+            break
+      while midi_dev:
+         # TODO performance tune to find acceptable wait length
+         if midi_dev.poll():
+            while midi_dev.poll():
+               child_pipe.send(midi_dev.read(1))
 
 
 class SerialTransport(Transport):
@@ -96,7 +142,61 @@ class BtLight(Device):
       return self.write(BtLight.FADE_TO, color)
 
 
-class LightPlayer(Device):
+class SensingDevice(Device):
+
+   def __init__(self, transport):
+      self._sensors = {}
+      Device.__init__(self, transport)
+
+   def addSensor(self, sensor_cls, sensor_id):
+      if not self.validChannel(sensor_id):
+         raise RuntimeError("Sensor must be bound using valid sensor id")
+      if sensor_id not in self._sensors:
+         self._sensors[sensor_id] = []
+      self._sensors[sensor_id].append(sensor_cls(self, sensor_id))
+
+   def _update_sensor(self, sensor_id, data):
+      if not self.validChannel(sensor_id):
+         raise RuntimeError("Update sent to unregistered sensor id")
+      if sensor_id in self._sensors:
+         for sensor in self._sensors[sensor_id]:
+            sensor.update(data)
+
+   def update(self):
+      raise NotImplementedError
+
+   def validChannel(self, channel):
+      return True
+
+   def register(self, channel, target, *args, **kwargs):
+      channel = int(channel)
+      if not self.validChannel(channel) or channel not in self._sensors:
+         raise ValueError("Must register behavior to a valid sensor.  Tried {0}, available {1}".format(
+             channel, str(self._sensors.keys())))
+      for sensor in self._sensors[channel]:
+         sensor.register(target, *args, **kwargs)
+
+   def register_and_wait(self, channel):
+      channel = int(channel)
+      event = threading.Event()
+      self.register(channel, event.set)
+      event.wait()
+      event.clear()
+      return "True"
+
+
+class MidiDevice(SensingDevice):
+
+   def __init__(self, device_name):
+      transport = BlockingMidi(device_name)
+      SensingDevice.__init__(self, transport)
+
+   def update(self):
+      message = self.read(1)[0]
+      self._update_sensor(message[0][1], message)
+
+
+class LightPlayer(SensingDevice):
 
    OFF = 0
    ON = 1
@@ -112,31 +212,10 @@ class LightPlayer(Device):
 
    def __init__(self, transport):
       self._sensors = {}
-      Device.__init__(self, transport)
+      SensingDevice.__init__(self, transport)
 
    def validChannel(self, channel):
       return 0 <= channel <= 15
-
-   def addSensor(self, cls, channel):
-      channel = int(channel)
-      if not self.validChannel(channel):
-         raise ValueError("Sensor must be bound to a valid channel")
-      self._sensors[channel] = cls(self, channel)
-
-   def register(self, channel, target, *args, **kwargs):
-      channel = int(channel)
-      if not self.validChannel(channel) or channel not in self._sensors:
-         raise ValueError("Must register behavior to a valid sensor.  Tried {0}, available {1}".format(
-             channel, str(self._sensors.keys())))
-      return self._sensors[channel].register(target, *args, **kwargs)
-
-   def register_and_wait(self, channel):
-      channel = int(channel)
-      event = threading.Event()
-      self.register(channel, event.set)
-      event.wait()
-      event.clear()
-      return "True"
 
    def poll(self, channel=None):
       if channel is not None:
