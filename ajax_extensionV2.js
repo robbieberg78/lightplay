@@ -239,21 +239,21 @@
     var descriptor = {
         blocks: [
             // Light cmds
-            ['w', 'turn on  %m.lights', 'send_on', “all lights"],
-            ['w', 'turn off  %m.lights', 'send_off', “all lights"],
-            ['w', 'toggle  %m.lights', 'send_toggle', “all lights"],
-            ['w', 'set the color of %m.lights to %m.colors', 'set_color', “all lights", “red"],
-            ['w', 'fade %m.lights to %m.colors', 'fade_color', “all lights", “red"],
-            ['w', 'fade in %m.lights', 'fade_in', “all lights"],
-            ['w', 'fade out %m.lights ', 'fade_out', “all lights"],
-            ['w', 'set the fade speed to %m.speeds', 'set_fade_speed', ‘slow'],
-            ['w', 'set the brightness of %m.lights to %m.power', 'set_power', “all lights", ‘high'],
+            ['w', 'turn on  %m.lights', 'send_on', "all lights"],
+            ['w', 'turn off  %m.lights', 'send_off', "all lights"],
+            ['w', 'toggle  %m.lights', 'send_toggle', "all lights"],
+            ['w', 'set  color of %m.lights to %m.colors', 'set_color', "all lights", "red"],
+            ['w', 'fade %m.lights to %m.colors', 'fade_color', "all lights", "red"],
+            ['w', 'fade in %m.lights', 'fade_in', "all lights"],
+            ['w', 'fade out %m.lights ', 'fade_out', "all lights"],
+            ['w', 'set  fade speed to %m.speeds', 'set_fade_speed', 'slow'],
+            ['w', 'set  brightness of %m.lights to %m.power', 'set_power', "all lights", 'high'],
             // Motor cmds
             ['w', 'turn on motor', 'send_motor_on'],
             ['w', 'turn off motor', 'send_motor_off'],
             ['w', 'reverse motor direction', 'send_motor_rev'],
             ['w', 'toggle motor', 'send_motor_toggle'],
-            ['w', 'set motor speed %m.speeds', 'set_speed', “slow"],
+            ['w', 'set motor speed %m.speeds', 'set_speed', "slow"],
             // Sensor cmds
             ['h', 'when %m.sensors', 'poll_sensor', "sensor clips are connected"],
             //            ['R', 'Value of %m.sensors', 'poll', "Sensor A"]
@@ -261,10 +261,10 @@
 
         url: 'https://github.com/bsb20/scratch-to-serial/tree/gh-pages',
         menus: {
-            power: [‘low', ‘medium’, ‘high'],
-            colors: [‘red', ‘orange', ‘yellow', ‘green', ‘blue', ‘purple', ‘white', ‘surprise'],
-            lights: [“all lights", “light 1", “light 2", “light 3"],
-            speeds: [“slow", “faster", “fastest"],
+            power: ['low', 'medium', 'high'],
+            colors: ['red', 'orange', 'yellow', 'green', 'blue', 'purple', 'white', 'surprise'],
+            lights: ["all lights", "light 1", "light 2", "light 3"],
+            speeds: ["slow", "faster", "fastest"],
             sensors: ["sensor clips are connected", "sensor clips are disconnected", "light shines on sensor", "shadow falls on sensor"]
         }
     };
