@@ -71,9 +71,15 @@ class EdgeTriggeredSensor(EventSensor):
 
    def high_state(self):
       self._state = True
+      self.raise_event()
 
    def low_state(self):
       self._state = False
+      self.raise_event()
+
+   def state(self):
+      return self._state
+
 
 '''This will prompt the user for a state, then call the EdgeTriggeredSensor's poll() implementation to fire if appropriate'''
 
@@ -108,6 +114,9 @@ class ArduinoEdgeTriggeredSensor(EdgeTriggeredSensor):
       if result is not None:
          self.low_state() if result >= 50 else self.high_state()
       return EdgeTriggeredSensor.poll(self)
+
+   def update(self, value):
+      self.high_state() if value else self.low_state()
 
 
 class ArduinoAnalogSensor(EventSensor):

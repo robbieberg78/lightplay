@@ -249,8 +249,8 @@
             ['w', 'set fade speed to %m.speeds', 'set_fade_speed', 'Slow'],
             ['w', 'set %m.lights to %m.power brightness', 'set_power', "All Lights", 'High'],
             // Motor cmds
-            ['w', 'turn on Motor', 'send_motor_on'],
-            ['w', 'turn off Motor', 'send_motor_off'],
+            ['w', 'turn on motor', 'send_motor_on'],
+            ['w', 'turn off motor', 'send_motor_off'],
             ['w', 'reverse motor direction', 'send_motor_rev'],
             ['w', 'toggle motor', 'send_motor_toggle'],
             ['w', 'set motor speed %m.speeds', 'set_speed', "Slow"],

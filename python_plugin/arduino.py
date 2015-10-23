@@ -184,6 +184,14 @@ class SensingDevice(Device):
       event.clear()
       return "True"
 
+   def register_and_wait_for_state(self, channel):
+      channel = int(channel)
+      event = threading.Event()
+      self.register(channel, event.set)
+      event.wait()
+      event.clear()
+      return str(self._sensors[channel].state())
+
 
 class MidiDevice(SensingDevice):
 
@@ -197,18 +205,45 @@ class MidiDevice(SensingDevice):
 
 
 class LightPlayer(SensingDevice):
+   LIGHT = 0
+   SET = 1
+   FADE_TO = 2
+   OTHER = 3
+   MOTOR = 4
 
-   OFF = 0
-   ON = 1
-   REVERSE = 2
-   FADE_IN = 3
-   FADE_OUT = 4
-   SET_LOW = 5
-   SET_MED = 6
-   SET_HIGH = 7
-   QUERY = 8
-   EDGE = 9
-   TOGGLE = 10
+   class Color(object):
+      RED = 0
+      ORANGE = 1
+      YELLOW = 2
+      GREEN = 3
+      BLUE = 4
+      PURPLE = 5
+      WHITE = 6
+      SURPRISE = 7
+
+   class Speed(object):
+      SLOW = 0
+      FASTER = 1
+      FASTEST = 2
+
+   class LightCommand(object):
+      ON = 0
+      OFF = 1
+      FADE_IN = 2
+      FADE_OUT = 3
+      TOGGLE = 4
+      SET_LOW = 5
+      SET_MED = 6
+      SET_HIGH = 7
+
+   class MotorCommand(object):
+      ON = 0
+      OFF = 1
+      REVERSE = 2
+      TOGGLE = 3
+      SET_LOW = 4
+      SET_MED = 5
+      SET_HIGH = 6
 
    def __init__(self, transport):
       self._sensors = {}
@@ -228,17 +263,19 @@ class LightPlayer(SensingDevice):
          for sensor in self._sensors.values():
             sensor.poll()
 
-   def _compileMessage(self, channel, action):
+   def _compileMessage(self, cmd_type, channel, action):
       # This makes it a little clearer what you're trying to accomplish
       # probably...
       action = int(action)
       channel = int(channel)
-      if action >= (1 << 4) or action < 0:
+      cmd_type = int(cmd_type)
+      if cmd_type > 7:
+         raise ValueError("Command Type overflow: cmd={0}".format(cmd_type))
+      if action > 7:
          raise ValueError("Action overflow: action={0}".format(action))
-      if not self.validChannel(channel):
-         raise ValueError(
-             "Valid channel required: channel={0}".format(channel))
-      return chr((channel << 4) | action)
+      if channel > 4:
+         raise ValueError("Channel overflow: channel={0}".format(channel))
+      return chr((cmd_type << 5) | (channel << 3) | action)
 
    def wait(self, seconds):
       limit = datetime.now() + timedelta(seconds=seconds)
@@ -252,47 +289,76 @@ class LightPlayer(SensingDevice):
       result = self.read(1)
       if result:
          op = ord(result)
-         if op < 3:
-            self._sensors[op].update(LightPlayer.EDGE)
-         else:
-            if op <= 103:
-               op -= 3
-               channel = 1
-            else:
-               op -= 104
-               channel = 2
-            self._sensors[channel].update(op)
+         channel = op / 2
+         value = op % 2
+         self._sensors[channel].update(value)
 
+   def isLight(self, channel):
+      return 0 <= channel < 4
+
+
+# Color Commands
    def on(self, channel):
-      return self.write(channel, LightPlayer.ON)
+      if self.isLight(channel):
+         return self.write(LightPlayer.LIGHT, channel, LightPlayer.LightCommand.ON)
+      else:
+         return self.write(LightPlayer.MOTOR, 0, LightPlayer.MotorCommand.ON)
 
-   def low(self, channel):
-      return self.write(channel, LightPlayer.SET_LOW)
+   def set(self, channel, color):
+      return self.write(LightPlayer.SET, channel, color)
 
-   def med(self, channel):
-      return self.write(channel, LightPlayer.SET_MED)
-
-   def high(self, channel):
-      return self.write(channel, LightPlayer.SET_HIGH)
+   def fade_to(self, channel, color):
+      return self.write(LightPlayer.FADE_TO, channel, color)
 
    def fade_in(self, channel):
-      result = self.write(channel, LightPlayer.FADE_IN)
-      # time.sleep(2.5)
-      return result
+      return self.write(LightPlayer.LIGHT, channel, LightPlayer.LightCommand.FADE_IN)
+
+   def fade_slow(self, channel):
+      return self.write(LightPlayer.OTHER, LightPlayer.Speed.SLOW, 0)
+
+   def fade_faster(self, channel):
+      return self.write(LightPlayer.OTHER, LightPlayer.Speed.FASTER, 0)
+
+   def fade_fastest(self, channel):
+      return self.write(LightPlayer.OTHER, LightPlayer.Speed.FASTEST, 0)
+
+   def low(self, channel):
+      if self.isLight(channel):
+         return self.write(LightPlayer.LIGHT, channel, LightPlayer.LightCommand.SET_LOW)
+      else:
+         return self.write(LightPlayer.MOTOR, 0, LightPlayer.LightCommand.SET_LOW)
+
+   def med(self, channel):
+      if self.isLight(channel):
+         return self.write(LightPlayer.LIGHT, channel, LightPlayer.LightCommand.SET_MED)
+      else:
+         return self.write(LightPlayer.MOTOR, 0, LightPlayer.MotorCommand.SET_MED)
+
+   def high(self, channel):
+      if self.isLight(channel):
+         return self.write(LightPlayer.LIGHT, channel, LightPlayer.LightCommand.SET_HIGH)
+      else:
+         return self.write(LightPlayer.MOTOR, 0, LightPlayer.LightCommand.SET_HIGH)
 
    def fade_out(self, channel):
-      result = self.write(channel, LightPlayer.FADE_OUT)
-      # time.sleep(2.5)
-      return result
+      return self.write(LightPlayer.LIGHT, channel, LightPlayer.LightCommand.FADE_OUT)
 
    def off(self, channel):
-      return self.write(channel, LightPlayer.OFF)
+      if self.isLight(channel):
+         return self.write(LightPlayer.LIGHT, channel, LightPlayer.LightCommand.OFF)
+      else:
+         return self.write(LightPlayer.MOTOR, 0, LightPLayer.MotorCommand.OFF)
 
    def reverse(self, channel):
-      return self.write(channel, LightPlayer.REVERSE)
+      if self.isLight(channel):
+         raise RuntimeError("Invalid command for light: Reverse")
+      return self.write(LightPlayer.MOTOR, 0, LightPlayer.MotorCommand.REVERSE)
 
    def toggle(self, channel):
-      return self.write(channel, LightPlayer.TOGGLE)
+      if self.isLight(channel):
+         return self.write(LightPlayer.LIGHT, channel, LightPlayer.LightCommand.TOGGLE)
+      else:
+         return self.write(LightPlayer.MOTOR, 0, LightPlayer.MotorCommand.TOGGLE)
 
 
 class SerialLightPlayer(LightPlayer):
