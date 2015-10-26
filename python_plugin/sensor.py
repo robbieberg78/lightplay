@@ -133,7 +133,8 @@ class ArduinoAnalogSensor(EventSensor):
       return self.__last_value
 
    def update(self, value):
-      if value == LightPlayer.EDGE:
+      if value != self.__last_value:
+         self.__last_value = value
          self.raise_event()
       else:
          self.__last_value = value

@@ -1,7 +1,7 @@
 (function(ext) {
 
     var PLUGIN_URL = 'http://localhost:8000';
-    var CHANNELS = ["All", "Light 1", "Light 2", "Light 3", "Motor", "Sensor A", "Sensor B"];
+    var CHANNELS = ["all lights", "light 1", "light 2", "light 3", "motor", "Sensor A", "Sensor B"];
     var SENSORS = ["Light", "Clip"];
 
     ext._getStatus = function() {
@@ -34,7 +34,7 @@
 
     function send_to(channel, action, callback) {
         console.log(action + " start");
-        if (0 <= channel && channel <= 9 || channel == "Motor") {
+        if (0 <= channel && channel <= 9 || channel == "motor") {
             $.ajax({
                 url: PLUGIN_URL,
                 data: {
@@ -85,19 +85,19 @@
     };
 
     ext.send_motor_on = function(callback) {
-        send_to_channel("Motor", "On", callback);
+        send_to_channel("motor", "On", callback);
     };
 
     ext.send_motor_off = function(callback) {
-        send_to_channel("Motor", "Off", callback);
+        send_to_channel("motor", "Off", callback);
     };
 
     ext.send_motor_toggle = function(callback) {
-        send_to_channel("Motor", "Toggle", callback);
+        send_to_channel("motor", "Toggle", callback);
     };
 
     ext.send_motor_rev = function(callback) {
-        send_to_channel("Motor", "Rev", callback);
+        send_to_channel("motor", "Rev", callback);
     };
 
     ext.send_all_on = function(callback) {
@@ -208,20 +208,22 @@
         send_to_channel(channel, "FadeOut", callback);
     };
 
-    ext.set_color = function(color, callback) {
-        var color_code = descriptor.menus.colors.indexOf(color) + 1;
+    ext.set_color = function(channel, color, callback) {
+        var color_code = descriptor.menus.colors.indexOf(color);
         data_obj = {
             action: "Set",
-            color: color_code
+            color: color_code,
+            channel: CHANNELS.indexOf(channel)
         };
         send_obj(data_obj, callback);
     };
 
-    ext.fade_color = function(color, callback) {
-        var color_code = descriptor.menus.colors.indexOf(color) + 1;
+    ext.fade_color = function(channel, color, callback) {
+        var color_code = descriptor.menus.colors.indexOf(color);
         data_obj = {
             action: "FadeTo",
-            color: color_code
+            color: color_code,
+            channel: CHANNELS.indexOf(channel)
         };
         send_obj(data_obj, callback);
     };

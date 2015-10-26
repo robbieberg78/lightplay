@@ -13,7 +13,7 @@ int motore = 3;
 int leddriver_enable = 2;
 
 
-int motorspeed = 100;
+int motorspeed = 255;
 boolean motor_is_on = false; // 
 boolean thisway = true;  // direction state
 
@@ -22,15 +22,23 @@ boolean thisway = true;  // direction state
 int RGBWtable[28] = {4095,0,0,0,2500,1500,0,0,1500,2500,0,0,0,4095,0,0,0,0,4095,0,2000,0,3000,0,0,0,0,4095};
 // this table contains the RGBW values for colors 0-6, in order.
 
-int light1color = 6; // set current color of light 1 to white
-int light2color = 6; // set current color of light 2 to white
-int light3color = 6; // set current color of light 3 to white
+int light1color = 0; // set current color of light 1 to white
+int light2color = 0; // set current color of light 2 to white
+int light3color = 0; // set current color of light 3 to white
 
  // for storing the light_is_on? states  of the three lights
 boolean light1_is_on = false; //
 boolean light2_is_on = false; //
 boolean light3_is_on = false; //
 boolean light1_is_fading_in = false; //
+boolean light2_is_fading_in = false; //
+boolean light3_is_fading_in = false; //
+boolean light1_is_fading_out = false; //
+boolean light2_is_fading_out = false; //
+boolean light3_is_fading_out = false; //
+boolean light1_is_fading_to = false; //
+boolean light2_is_fading_to = false; //
+boolean light3_is_fading_to = false; //
 
 
 
@@ -42,17 +50,19 @@ int threshold = 512;
 const int tablesize = 200;
 int fadetable[tablesize];
 
-// int fadetable[tablesize] = {0,1,2,4,6,8,11,16,22,32,42,64,90,128,160,256,350,512,700,1024,1400,2048,2700,4095};
-// int tablesize = sizeof(fadetable)/2;
-
 unsigned long t1start = 0;
 unsigned long t1 = 0;
+unsigned long t2start = 0;
+unsigned long t2 = 0;
+unsigned long t3start = 0;
+unsigned long t3 = 0;
 unsigned long tfade = 5000;
 int ptr = 0;
 
 
-// setup led_drivercalled this way, it uses the default address 0x40
-Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
+// setup led_drivercalled this way, it uses the default address 0x40:
+// Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
+Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver(0x70);
 // you can also call it with a different address you want
 //Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver(0x41);
 
@@ -104,12 +114,16 @@ void loop()
       {
         incomingByte = Serial.read();
         dispatch(incomingByte);
+        digitalWrite(13, HIGH);
+        delay(20); // set timing of single event loop; delay also eliminates effects of sensor bounce
+        digitalWrite(13, LOW);
       }
       
-      // threshold = analogRead(1); // dynamically set threshold
-    edge(); //check for sensor edge
-    fades();
-    delay(25); // set timing of single event loop; delay also eliminates effects of sensor bounce
+     // threshold = analogRead(1); // dynamically set threshold
+    check_for_sensor_edge(); //check for sensor edge
+    update_fades();
+   
+    delay(20); // set timing of single event loop; delay also eliminates effects of sensor bounce
   }
 
 void dispatch(byte incomingByte)
@@ -117,76 +131,117 @@ void dispatch(byte incomingByte)
     command = (incomingByte & 0xe0) >> 5; // bitwise + shift  selects bits 5-7, which are used to store high level command
     xbits = (incomingByte & 0x18) >> 3; // bits 3 and 4 used to select which light
     ybits = incomingByte & 0x07; // bits 0-2 select which subcommand or which color 
-    Serial.println(command);
-    Serial.println(xbits);
-    Serial.println(ybits);
+    // Serial.println(command);
+    // Serial.println(xbits);
+    // Serial.println(ybits);
     switch(command)
       {
-        Serial.println(command);
+        // Serial.println(command);
         case 0:
-          Serial.println("command 0 one argument light commands");
+          // Serial.println("command 0 one argument light commands");
           // one argument light commands
           switch(ybits)
             {
               case 0:
-                Serial.println("ybits 0 - turn on light(s)");
+                // Serial.println("ybits 0 - turn on light(s)");
                 // turn on light(s)
                 lighton();
                 break;
       
               case 1:
-                Serial.println("ybits 1 - turn off light(s)");
+                // Serial.println("ybits 1 - turn off light(s)");
                 // turn off light(s)
                 lightoff();
                 break;
 
               case 2:
-                Serial.println("ybits 2 - fade in light(s)");
+                // Serial.println("ybits 2 - fade in light(s)");
                 // fade in light(s)
                 fadein();
                 break;
+
+              case 3:
+                // Serial.println("ybits 3 - fade out light(s)");
+                // fade in light(s)
+                fadeout();
+                break;
       
               case 4:
-                Serial.println("ybits 4 - toggle light(s)");
+                // Serial.println("ybits 4 - toggle light(s)");
                 // toggle light(s)
                 lighttoggle();
                 break;
+
+              case 5:
+                // set brightness low
+                // not yet implemented
+                break;
+
+              case 6:
+                // set brightness medium
+                // not yet implemented                
+                break;
+
+              case 7:
+                // set brightness high
+                // not yet implemented
+                break;
+                
             }
           break;
         case 1:
-          Serial.println("command 1 - set color to");
+          // Serial.println("command 1 - set color to");
           setlightcolor();
           break;
         case 2:
-          Serial.println("command 2 - fade color to");
+          // Serial.println("command 2 - fade color to");
           break;
         case 3:
-          Serial.println("command 3 - other/extension light commands");
-          break;
-        case 4:
-          Serial.println("command 4 - motor commands");
+          // Serial.println("command 3 - other/extension light commands");
           switch(ybits)
             {
               case 0:
-                Serial.println("ybits 0 - turn motor on");
+                switch(xbits)
+                  {
+                    case 0:
+                      tfade = 10000;
+                      break;
+
+                    case 1:
+                      tfade = 5000;
+                      break;
+
+                    case 2:
+                      tfade = 2500;
+                      break;
+                  }
+                break;
+            }
+            
+        case 4:
+          // Serial.println("command 4 - motor commands");
+          switch(ybits)
+            {
+              case 0:
+                // Serial.println("ybits 0 - turn motor on");
                 // turn on motor
                 motoron();
                 break;
 
               case 1:
-                Serial.println("ybits 1 - turn motor off");
+                // Serial.println("ybits 1 - turn motor off");
                 // turn motor off
                 motoroff();
                 break;
 
               case 2:
-                Serial.println("ybits 2 - reverse motor");
+                // Serial.println("ybits 2 - reverse motor");
                 // reverse motor
                 reversemotor();
                 break;
 
               case 3:
-                Serial.println("ybits 3 - toggle motor");
+                // Serial.println("ybits 3 - toggle motor");
                 // toggle motor
                 togglemotor();
                 break;
@@ -212,7 +267,7 @@ void dispatch(byte incomingByte)
 
 void lighton()
   {
-    Serial.println("turn on light");
+    // Serial.println("turn on light");
     if ((xbits == 1) || (xbits == 0)) 
       {
         for (int i = 0; i <= 3; i++)
@@ -237,7 +292,7 @@ void lighton()
 
 void lightoff()
   {
-    Serial.println("turn off light");
+    // Serial.println("turn off light");
     if ((xbits == 1) || (xbits == 0)) 
       {
         for (int i = 0; i <= 3; i++)
@@ -286,16 +341,16 @@ void lighttoggle()
         light2_is_on = !light2_is_on;
       }
   
-    if ((xbits == 2) || (xbits == 0))
+    if ((xbits == 3) || (xbits == 0))
       {
         for (int i = 0; i <= 3; i++)
           {
             if (!light2_is_on)
-              {pwm.setPWM(4 + i, 0, RGBWtable[4 * light1color + i]);}
+              {pwm.setPWM(8 + i, 0, RGBWtable[4 * light1color + i]);}
             else
-              {pwm.setPWM(4 + i, 0, 0);}
+              {pwm.setPWM(8 + i, 0, 0);}
           }
-        light2_is_on = !light2_is_on;
+        light3_is_on = !light3_is_on;
       }
     
   }
@@ -334,10 +389,20 @@ void fadein()
   {
     t1start = millis();
     light1_is_fading_in = true;
+    light1_is_fading_out = false;
+    light1_is_fading_to = false;
   }
 
 
-void fades()
+void fadeout()
+  {
+    t1start = millis();
+    light1_is_fading_out = true;
+    light1_is_fading_in = false;
+    light1_is_fading_to = false;
+  }
+
+void update_fades()
   {
     if (light1_is_fading_in)
       {
@@ -346,8 +411,15 @@ void fades()
         if (ptr <= tablesize - 1)
           {
             int x = fadetable[ptr];
-            pwm.setPWM(1, 0, x);
-            // Serial.println(x);
+          
+            for (int i = 0; i <= 3; i++)
+              {
+                int x = fadetable[ptr];
+                int y = RGBWtable[4 * light1color + i];
+                int z = map(x, 0, 4095, 0, y);
+                pwm.setPWM(i, 0, z);
+              }
+            
           }
         else
           {
@@ -355,21 +427,49 @@ void fades()
           }
    
       }
+
+    if (light1_is_fading_out)
+      {
+        t1 = millis() - t1start;
+        ptr = int(tablesize * t1 / tfade);
+        ptr = tablesize - 1 - ptr;
+        if (ptr >= 0)
+          {
+            int x = fadetable[ptr];
+            
+            for (int i = 0; i <= 3; i++)
+              {
+                int x = fadetable[ptr];
+                int y = RGBWtable[4 * light1color + i];
+                int z = map(x, 0, 4095, 0, y);
+                pwm.setPWM(i, 0, z);
+              }
+          }
+        else
+          {
+            light1_is_fading_out = false;
+          }
+   
+      }
   }
 
 
-void edge() // look for sensor edge 
+void check_for_sensor_edge() // check for sensor edge 
   {
     newsensor = (analogRead(0) < threshold);
     if ((newsensor != oldsensor) && (newsensor == true))
       {
         Serial.write(0);
+        Serial.write(2);
         digitalWrite(13, HIGH);   // turn the LED on (HIGH is the voltage level)
         delay(10);              // wait for a second
         digitalWrite(13, LOW); 
       }
     if ((newsensor != oldsensor) && (newsensor == false))
-      {Serial.write(1);}
+      {
+        Serial.write(1);
+        Serial.write(3);
+      }
     oldsensor = newsensor;
   }
 

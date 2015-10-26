@@ -76,6 +76,7 @@ class SerialTransport(Transport):
 
    def write(self, payload):
       with self._lock:
+         print "SENDING BYTES", ord(payload)
          return self._serial.write(payload)
 
    def read(self, length, timeout=0):
@@ -96,7 +97,10 @@ class Device(object):
       raise NotImplementedError
 
    def write(self, *args, **kwargs):
-      return self._transport.write(self._compileMessage(*args, **kwargs))
+      print self._compileMessage(*args, **kwargs), "When Compiled"
+      a=self._transport.write(self._compileMessage(*args, **kwargs))
+      print a
+      return a
 
    def read(self, length, timeout=0):
       return self._transport.read(length, timeout)
@@ -190,7 +194,7 @@ class SensingDevice(Device):
       self.register(channel, event.set)
       event.wait()
       event.clear()
-      return str(self._sensors[channel].state())
+      return str(self._sensors[channel][0].state())
 
 
 class MidiDevice(SensingDevice):
@@ -246,7 +250,6 @@ class LightPlayer(SensingDevice):
       SET_HIGH = 6
 
    def __init__(self, transport):
-      self._sensors = {}
       SensingDevice.__init__(self, transport)
 
    def validChannel(self, channel):
@@ -258,10 +261,11 @@ class LightPlayer(SensingDevice):
          if not self.validChannel(channel):
             raise ValueError("Must poll a valid channel")
          if channel in self._sensors:
-            return self._sensors[channel].poll()
+            return self._sensors[channel][0].poll()
       else:
-         for sensor in self._sensors.values():
-            sensor.poll()
+         for sensor_group in self._sensors.values():
+            for sensor in sensor_group:
+                sensor.poll()
 
    def _compileMessage(self, cmd_type, channel, action):
       # This makes it a little clearer what you're trying to accomplish
@@ -275,7 +279,9 @@ class LightPlayer(SensingDevice):
          raise ValueError("Action overflow: action={0}".format(action))
       if channel > 4:
          raise ValueError("Channel overflow: channel={0}".format(channel))
-      return chr((cmd_type << 5) | (channel << 3) | action)
+      compiled = (cmd_type << 5) | (channel << 3) | action
+      print cmd_type, channel, action
+      return chr(compiled)
 
    def wait(self, seconds):
       limit = datetime.now() + timedelta(seconds=seconds)
@@ -291,10 +297,11 @@ class LightPlayer(SensingDevice):
          op = ord(result)
          channel = op / 2
          value = op % 2
-         self._sensors[channel].update(value)
+         for sensor in self._sensors[channel]:
+            sensor.update(value)
 
    def isLight(self, channel):
-      return 0 <= channel < 4
+      return 0 <= int(channel) and int(channel) < 4
 
 
 # Color Commands
@@ -347,7 +354,7 @@ class LightPlayer(SensingDevice):
       if self.isLight(channel):
          return self.write(LightPlayer.LIGHT, channel, LightPlayer.LightCommand.OFF)
       else:
-         return self.write(LightPlayer.MOTOR, 0, LightPLayer.MotorCommand.OFF)
+         return self.write(LightPlayer.MOTOR, 0, LightPlayer.MotorCommand.OFF)
 
    def reverse(self, channel):
       if self.isLight(channel):
