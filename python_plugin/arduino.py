@@ -98,7 +98,7 @@ class Device(object):
 
    def write(self, *args, **kwargs):
       print self._compileMessage(*args, **kwargs), "When Compiled"
-      a=self._transport.write(self._compileMessage(*args, **kwargs))
+      a = self._transport.write(self._compileMessage(*args, **kwargs))
       print a
       return a
 
@@ -265,7 +265,7 @@ class LightPlayer(SensingDevice):
       else:
          for sensor_group in self._sensors.values():
             for sensor in sensor_group:
-                sensor.poll()
+               sensor.poll()
 
    def _compileMessage(self, cmd_type, channel, action):
       # This makes it a little clearer what you're trying to accomplish
@@ -333,7 +333,7 @@ class LightPlayer(SensingDevice):
       if self.isLight(channel):
          return self.write(LightPlayer.LIGHT, channel, LightPlayer.LightCommand.SET_LOW)
       else:
-         return self.write(LightPlayer.MOTOR, 0, LightPlayer.LightCommand.SET_LOW)
+         return self.write(LightPlayer.MOTOR, 0, LightPlayer.MotorCommand.SET_LOW)
 
    def med(self, channel):
       if self.isLight(channel):
@@ -345,7 +345,7 @@ class LightPlayer(SensingDevice):
       if self.isLight(channel):
          return self.write(LightPlayer.LIGHT, channel, LightPlayer.LightCommand.SET_HIGH)
       else:
-         return self.write(LightPlayer.MOTOR, 0, LightPlayer.LightCommand.SET_HIGH)
+         return self.write(LightPlayer.MOTOR, 0, LightPlayer.MotorCommand.SET_HIGH)
 
    def fade_out(self, channel):
       return self.write(LightPlayer.LIGHT, channel, LightPlayer.LightCommand.FADE_OUT)

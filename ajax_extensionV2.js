@@ -96,6 +96,11 @@
         send_to_channel("motor", "Toggle", callback);
     };
 
+    ext.set_speed = function(level, callback) {
+        level = descriptor.menus.power[descriptor.menus.speeds.indexOf(level)];
+        send_to_channel("motor", level, callback);
+    }
+
     ext.send_motor_rev = function(callback) {
         send_to_channel("motor", "Rev", callback);
     };
@@ -186,11 +191,6 @@
     ext.poll = function(sensor, callback) {
         send_to_sensor(sensor, "Poll", callback);
     };
-
-    ext.set_speed = function(channel, level, callback) {
-        level = descriptor.menus.power[descriptor.menus.speeds.indexOf(level)];
-        send_to_sensor(sensor, level, callback);
-    }
 
     ext.set_power = function(channel, level, callback) {
         send_to_channel(channel, level, callback);
