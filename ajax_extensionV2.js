@@ -3,6 +3,7 @@
     var PLUGIN_URL = 'http://localhost:8000';
     var CHANNELS = ["all lights", "light 1", "light 2", "light 3", "motor", "Sensor A", "Sensor B"];
     var SENSORS = ["Light", "Clip"];
+    var LEVELS = ["Low", "Med", "High"];
 
     ext._getStatus = function() {
         return {
@@ -97,9 +98,13 @@
     };
 
     ext.set_speed = function(level, callback) {
-        level = descriptor.menus.power[descriptor.menus.speeds.indexOf(level)];
-        send_to_channel("motor", level, callback);
-    }
+        idx = descriptor.menus.speeds.indexOf(level);
+        if (idx >= 0) {
+            send_to_channel("motor", LEVELS[idx], callback);
+        } else {
+            console.log("invalid speed");
+        }
+    };
 
     ext.send_motor_rev = function(callback) {
         send_to_channel("motor", "Rev", callback);
@@ -193,12 +198,22 @@
     };
 
     ext.set_power = function(channel, level, callback) {
-        send_to_channel(channel, level, callback);
+        idx = descriptor.menus.power.indexOf(level);
+        if (idx >= 0) {
+            send_to_channel(channel, LEVELS[idx], callback);
+        } else {
+            console.log("invalid power");
+        }
     };
 
     ext.set_fade_speed = function(speed, callback) {
-        send_to_channel(0, speed, callback);
-    }
+        idx = descriptor.menus.speeds.indexOf(speed);
+        if (idx >= 0) {
+            send_to_channel(0, LEVELS[idx], callback);
+        } else {
+            console.log("invalid speed");
+        }
+    };
 
     ext.fade_in = function(channel, callback) {
         send_to_channel(channel, "FadeIn", callback);
@@ -257,7 +272,7 @@
             ['w', 'toggle motor', 'send_motor_toggle'],
             ['w', 'set motor speed %m.speeds', 'set_speed', "slow"],
             // Sensor cmds
-            ['h', 'when %m.sensors', 'poll_sensor', "sensor clips are connected"],
+            ['h', 'when %m.sensors', 'poll_sensor', "sensor clips are connected"]
             //            ['R', 'Value of %m.sensors', 'poll', "Sensor A"]
         ],
 
