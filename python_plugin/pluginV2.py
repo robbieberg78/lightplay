@@ -112,7 +112,7 @@ if __name__ == "__main__":
       if not args.serial_port:
          # look for valid serial devices, if more than one is available, choose
          # one but notify the user
-         serial_list = glob.glob("/dev/tty.usbmodem*")
+         serial_list = glob.glob("/dev/tty.usbserial*")
          if serial_list:
             args.serial_port = serial_list[0]
             if len(serial_list) > 1:

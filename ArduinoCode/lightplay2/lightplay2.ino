@@ -19,7 +19,7 @@ boolean thisway = true;  // direction state
 
 // color code: 0 = red, 1 = orange, 2 = yellow, 3 = green, 4 = blue, 5 = violet, 6 = white, 7 = surprise
 
-int RGBWtable[28] = {4095,0,0,0,2500,1500,0,0,1500,2500,0,0,0,4095,0,0,0,0,4095,0,2000,0,3000,0,0,0,0,4095};
+int RGBWtable[28] = {4055,0,0,0,2500,1500,0,0,1500,2500,0,0,0,4095,0,0,0,0,4095,0,2000,0,3000,0,0,0,0,4095};
 // this table contains the RGBW values for colors 0-6, in order.
 
 int light1color = 0; // set current color of light 1 to white
@@ -106,6 +106,8 @@ void setup()
     // so setting TWBR to 2 would raise clock speed to max allowable of 400 kHz
     // but 200 kHz is fast enough. With 1 k pullups on a breadboard, the clock signal looks ok on scope, no need to go faster though
     bootflash(); // flash all the lights
+    
+    
   }
 
 void loop()
@@ -262,6 +264,13 @@ void dispatch(byte incomingByte)
                 break;
             } 
           break;
+
+//          case 5:  // reset driver chip
+//            digitalWrite(leddriver_enable, HIGH); // enable LED driver
+//            delay(1000);
+//            digitalWrite(leddriver_enable, LOW); // enable LED driver
+//
+//            break;
       }
   }
 
@@ -334,7 +343,7 @@ void lighttoggle()
         for (int i = 0; i <= 3; i++)
           {
             if (!light2_is_on)
-              {pwm.setPWM(4 + i, 0, RGBWtable[4 * light1color + i]);}
+              {pwm.setPWM(4 + i, 0, RGBWtable[4 * light2color + i]);}
             else
               {pwm.setPWM(4 + i, 0, 0);}
           }

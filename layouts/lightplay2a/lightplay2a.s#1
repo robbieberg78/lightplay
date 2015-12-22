@@ -12920,7 +12920,6 @@ In this library the device names are the same as the pin names of the symbols, t
 <part name="GND7" library="supply1" deviceset="GND" device=""/>
 <part name="P+1" library="supply1" deviceset="+5V" device=""/>
 <part name="GND9" library="supply1" deviceset="GND" device=""/>
-<part name="P+6" library="supply1" deviceset="+5V" device=""/>
 <part name="GND10" library="supply1" deviceset="GND" device=""/>
 <part name="GND11" library="supply1" deviceset="GND" device=""/>
 <part name="P+7" library="supply1" deviceset="+5V" device=""/>
@@ -13068,7 +13067,6 @@ In this library the device names are the same as the pin names of the symbols, t
 <instance part="GND7" gate="1" x="210.82" y="99.06"/>
 <instance part="P+1" gate="1" x="-58.42" y="-30.48"/>
 <instance part="GND9" gate="1" x="-7.62" y="17.78"/>
-<instance part="P+6" gate="1" x="-43.18" y="30.48"/>
 <instance part="GND10" gate="1" x="-50.8" y="17.78"/>
 <instance part="GND11" gate="1" x="48.26" y="22.86"/>
 <instance part="P+7" gate="1" x="58.42" y="55.88"/>
@@ -13451,12 +13449,6 @@ In this library the device names are the same as the pin names of the symbols, t
 <junction x="-71.12" y="-43.18"/>
 <pinref part="C2" gate="G$1" pin="1"/>
 <pinref part="C3" gate="G$1" pin="1"/>
-</segment>
-<segment>
-<pinref part="ARDUINOLEFT" gate="G$1" pin="1"/>
-<wire x1="-53.34" y1="25.4" x2="-43.18" y2="25.4" width="0.1524" layer="91"/>
-<pinref part="P+6" gate="1" pin="+5V"/>
-<wire x1="-43.18" y1="25.4" x2="-43.18" y2="27.94" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="BLUETOOTH" gate="G$1" pin="3"/>

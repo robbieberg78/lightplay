@@ -12996,15 +12996,16 @@ In this library the device names are the same as the pin names of the symbols, t
 <part name="R9" library="robbie" deviceset="R-US_" device="0617/17"/>
 <part name="R10" library="robbie" deviceset="R-US_" device="0617/17"/>
 <part name="R11" library="robbie" deviceset="R-US_" device="0617/17"/>
-<part name="C4" library="resistor" deviceset="C-US" device="C0805"/>
-<part name="C5" library="resistor" deviceset="C-US" device="C0805"/>
+<part name="C4" library="resistor" deviceset="C-US" device="C0805" value="0.1uF"/>
+<part name="C5" library="resistor" deviceset="C-US" device="C0805" value="0.1 uF"/>
 <part name="GND28" library="supply1" deviceset="GND" device=""/>
 <part name="+3V5" library="supply1" deviceset="+3V3" device=""/>
-<part name="C6" library="resistor" deviceset="C-US" device="C0805"/>
+<part name="C6" library="resistor" deviceset="C-US" device="C0805" value="0.1uF"/>
 <part name="U$1" library="robbie" deviceset="STM3.3VREG" device=""/>
 <part name="P+5" library="supply1" deviceset="+5V" device=""/>
 <part name="+3V6" library="supply1" deviceset="+3V3" device=""/>
 <part name="GND31" library="supply1" deviceset="GND" device=""/>
+<part name="C7" library="resistor" deviceset="C-US" device="C1206" value="0.33 uF"/>
 </parts>
 <sheets>
 <sheet>
@@ -13187,6 +13188,7 @@ In this library the device names are the same as the pin names of the symbols, t
 <instance part="P+5" gate="1" x="-66.04" y="-73.66"/>
 <instance part="+3V6" gate="G$1" x="-81.28" y="-73.66"/>
 <instance part="GND31" gate="1" x="-66.04" y="-101.6"/>
+<instance part="C7" gate="G$1" x="-91.44" y="12.7"/>
 </instances>
 <busses>
 </busses>
@@ -13395,6 +13397,9 @@ In this library the device names are the same as the pin names of the symbols, t
 <pinref part="C6" gate="G$1" pin="2"/>
 <wire x1="-60.96" y1="7.62" x2="-71.12" y2="7.62" width="0.1524" layer="91"/>
 <junction x="-71.12" y="7.62"/>
+<pinref part="C7" gate="G$1" pin="2"/>
+<wire x1="-81.28" y1="7.62" x2="-91.44" y2="7.62" width="0.1524" layer="91"/>
+<junction x="-81.28" y="7.62"/>
 </segment>
 <segment>
 <pinref part="U$1" gate="G$1" pin="GND"/>
@@ -14129,6 +14134,9 @@ In this library the device names are the same as the pin names of the symbols, t
 <pinref part="C6" gate="G$1" pin="1"/>
 <wire x1="-71.12" y1="15.24" x2="-60.96" y2="15.24" width="0.1524" layer="91"/>
 <junction x="-71.12" y="15.24"/>
+<pinref part="C7" gate="G$1" pin="1"/>
+<wire x1="-81.28" y1="15.24" x2="-91.44" y2="15.24" width="0.1524" layer="91"/>
+<junction x="-81.28" y="15.24"/>
 </segment>
 <segment>
 <pinref part="U$1" gate="G$1" pin="VOUT"/>
