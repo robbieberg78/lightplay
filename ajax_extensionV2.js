@@ -161,9 +161,9 @@
         var sensorID = descriptor.menus.sensors.indexOf(sensor) / 2;
         var action = descriptor.menus.sensors.indexOf(sensor) % 2;
         if (action) {
-            poll_for_off(sensorID);
+            return poll_for_off(sensorID);
         } else {
-            poll_for_on(sensorID);
+            return poll_for_on(sensorID);
         }
     };
 

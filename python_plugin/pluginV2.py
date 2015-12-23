@@ -16,8 +16,8 @@ from urlparse import urlparse, parse_qs
 def run_test_arduino(args):
    arduino = SerialLightPlayer(args.serial_port, args.baudrate)
    devices = [arduino]
-   arduino.addSensor(sensor.ArduinoAnalogSensor, 0)
-   arduino.addSensor(sensor.ArduinoAnalogSensor, 1)
+   arduino.addSensor(sensor.ArduinoEdgeTriggeredSensor, 0)
+   arduino.addSensor(sensor.ArduinoEdgeTriggeredSensor, 1)
    actions = {
        "On": arduino.on,
        "Off": arduino.off,
