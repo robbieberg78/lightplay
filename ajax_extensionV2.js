@@ -4,6 +4,9 @@
     var CHANNELS = ["all lights", "light 1", "light 2", "light 3", "motor", "Sensor A", "Sensor B"];
     var SENSORS = ["Light", "Clip"];
     var LEVELS = ["Low", "Med", "High"];
+    var FADE_SPEEDS = [10000, 5000, 1000];
+    
+    ext.fade_speed = 1000;
 
     ext._getStatus = function() {
         return {
@@ -209,6 +212,7 @@
     ext.set_fade_speed = function(speed, callback) {
         idx = descriptor.menus.speeds.indexOf(speed);
         if (idx >= 0) {
+            ext.fade_speed = FADE_SPEEDS[idx];
             send_to_channel(0, LEVELS[idx], callback);
         } else {
             console.log("invalid speed");
@@ -216,11 +220,16 @@
     };
 
     ext.fade_in = function(channel, callback) {
-        send_to_channel(channel, "FadeIn", callback);
+        send_to_channel(channel, "FadeIn", function(data){
+            setTimeout(callback, ext.fade_speed, data);
+        });
+        
     };
 
     ext.fade_out = function(channel, callback) {
-        send_to_channel(channel, "FadeOut", callback);
+        send_to_channel(channel, "FadeOut", function(data){
+            setTimeout(callback, ext.fade_speed, data);
+        });
     };
 
     ext.set_color = function(channel, color, callback) {
