@@ -4,7 +4,7 @@
     var CHANNELS = ["all lights", "light 1", "light 2", "light 3", "motor", "Sensor A", "Sensor B"];
     var SENSORS = ["Light", "Clip"];
     var LEVELS = ["Low", "Med", "High"];
-    var FADE_SPEEDS = [10000, 5000, 1000];
+    var FADE_SPEEDS = [10100, 5100, 1100];
     
     ext.fade_speed = 1000;
 
@@ -249,7 +249,9 @@
             color: color_code,
             channel: CHANNELS.indexOf(channel)
         };
-        send_obj(data_obj, callback);
+        send_obj(data_obj, function(data){
+            setTimeout(callback, ext.fade_speed, data);
+        });
     };
 
     ext.bt_off = function(callback) {

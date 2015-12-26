@@ -20,12 +20,11 @@ def soak():
 def tx(n):
     s.write(chr(n)) # send Arduino a byte,
     #Arduino will respond by sending 3 bytes (ubits, xbits,ybits)
-##    time.sleep(0.2)  # give buffer time to fill
-##    while True: 
-##        x = s.readline()
-##        if x:
-##            print(x)
-##        time.sleep(0.02)
+    time.sleep(0.2)  # give Arduino time to respond 
+    x = s.readline()
+    if x:
+        print(x)
+
 
 
 def surprise():

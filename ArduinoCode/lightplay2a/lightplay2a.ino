@@ -26,10 +26,17 @@ int light1color = 6; // set current color of light 1 to white
 int light2color = 6; // set current color of light 2 to white
 int light3color = 6; // set current color of light 3 to white
 
- // for storing the light_is_on? states  of the three lights
+
+int light1newcolor = 0; // target color for light 1 fade to
+int light2newcolor = 0; // target color for light 2 fade to
+int light3newcolor = 0; // target color for light 3 fade to
+
+// for storing the light_is_on? states  of the three lights
 boolean light1_is_on = false; //
 boolean light2_is_on = false; //
 boolean light3_is_on = false; //
+
+// for storing the fade states  of the three lights
 boolean light1_is_fading_in = false; //
 boolean light2_is_fading_in = false; //
 boolean light3_is_fading_in = false; //
@@ -49,6 +56,7 @@ int threshold = 512;
 
 const int tablesize = 200;
 int fadetable[tablesize];
+int fadetotable[tablesize];
 
 unsigned long t1start = 0;
 unsigned long t1 = 0;
@@ -74,7 +82,7 @@ void setup()
     pinMode(13, OUTPUT);
     pinMode(motora, OUTPUT);
     pinMode(motorb, OUTPUT);
-    pinMode(motore, OUTPUT);
+ 
 
     pinMode(A0, INPUT_PULLUP); // sensor pin 
     pinMode(A1, INPUT_PULLUP); // for dynamic threshold
@@ -202,6 +210,7 @@ void dispatch(byte incomingByte)
           break;
         case 2:
           // Serial.println("command 2 - fade color to");
+          fadeto();
           break;
         case 3:
           // Serial.println("command 3 - other/extension light commands");
@@ -352,8 +361,8 @@ void lighttoggle()
       {
         for (int i = 0; i <= 3; i++)
           {
-            if (!light2_is_on)
-              {pwm.setPWM(11 - i, 0, RGBWtable[4 * light1color + i]);}
+            if (!light3_is_on)
+              {pwm.setPWM(11 - i, 0, RGBWtable[4 * light3color + i]);}
             else
               {pwm.setPWM(11 - i, 0, 4096);}
           }
@@ -443,6 +452,34 @@ void fadeout()
        }
   }
 
+void fadeto()
+  {
+     if (((xbits == 1) || (xbits == 0)) && light1_is_fading_to == false)
+       { 
+         t1start = millis();
+         light1_is_fading_in = false;
+         light1_is_fading_out = false;
+         light1_is_fading_to = true;
+         light1newcolor = ybits;
+       }
+      if ((xbits == 2) || (xbits == 0))
+       {
+         t2start = millis();
+         light2_is_fading_in = false;
+         light2_is_fading_out = false;
+         light2_is_fading_to = true;
+         light2newcolor = ybits;
+       }
+     if ((xbits == 3) || (xbits == 0))
+       {
+         t3start = millis();
+         light3_is_fading_in = false;
+         light3_is_fading_out = false;
+         light3_is_fading_to = true;
+         light3newcolor = ybits;
+       }
+  }
+
 void update_fades()
   {
     if (light1_is_fading_in)
@@ -465,6 +502,7 @@ void update_fades()
         else
           {
             light1_is_fading_in = false;
+            light1_is_on = true;
           }
    
       }
@@ -489,6 +527,7 @@ void update_fades()
         else
           {
             light1_is_fading_out = false;
+            light1_is_on = false;
           }
    
       }
@@ -513,6 +552,7 @@ void update_fades()
             else
               {
                 light2_is_fading_in = false;
+                light2_is_on = true;
               }
        
           }
@@ -537,6 +577,7 @@ void update_fades()
         else
           {
             light2_is_fading_out = false;
+            light2_is_on = false;
           }
    
       }
@@ -561,6 +602,7 @@ void update_fades()
             else
               {
                 light3_is_fading_in = false;
+                light3_is_on = true;
               }
        
           }
@@ -585,9 +627,101 @@ void update_fades()
         else
           {
             light3_is_fading_out = false;
+            light3_is_on = false;
           }
    
       }
+
+    if (light1_is_fading_to)
+      {
+        t1 = millis() - t1start;
+        ptr = int(tablesize * t1 / tfade);
+        if (ptr <= tablesize - 1)
+          {
+            for (int i = 0; i <= 3; i++)
+              {
+                int x = fadetotable[ptr];
+                int ystart = RGBWtable[4 * light1color + i];
+                int ystop = RGBWtable[4 * light1newcolor + i];
+                if (ystop != ystart)
+                  {
+                    int z = map(x, 0, 4095, ystart, ystop);
+                    pwm.setPWM(7-i, 0, z);
+                  }
+              }         
+          }
+        else
+          {
+            light1_is_fading_to = false;
+            light1color = light1newcolor;
+            light1_is_on = true;
+            for (int i = 0; i <= 3; i++)
+              {pwm.setPWM(7-i, 0, RGBWtable[4 * light1color + i]);}
+            
+          }
+   
+      }
+
+    if (light2_is_fading_to)
+      {
+        t2 = millis() - t1start;
+        ptr = int(tablesize * t2 / tfade);
+        if (ptr <= tablesize - 1)
+          {
+            for (int i = 0; i <= 3; i++)
+              {
+                int x = fadetotable[ptr];
+                int ystart = RGBWtable[4 * light2color + i];
+                int ystop = RGBWtable[4 * light2newcolor + i];
+                if (ystop != ystart)
+                  {
+                    int z = map(x, 0, 4095, ystart, ystop);
+                    pwm.setPWM(3-i, 0, z);
+                  }
+              }         
+          }
+        else
+          {
+            light2_is_fading_to = false;
+            light2color = light2newcolor;
+            light2_is_on = true;
+            for (int i = 0; i <= 3; i++)
+              {pwm.setPWM(3-i, 0, RGBWtable[4 * light2color + i]);}
+            
+          }
+   
+      }      
+
+    if (light3_is_fading_to)
+      {
+        t3 = millis() - t3start;
+        ptr = int(tablesize * t3 / tfade);
+        if (ptr <= tablesize - 1)
+          {
+            for (int i = 0; i <= 3; i++)
+              {
+                int x = fadetotable[ptr];
+                int ystart = RGBWtable[4 * light3color + i];
+                int ystop = RGBWtable[4 * light3newcolor + i];
+                if (ystop != ystart)
+                  {
+                    int z = map(x, 0, 4095, ystart, ystop);
+                    pwm.setPWM(11-i, 0, z);
+                  }
+              }         
+          }
+        else
+          {
+            light3_is_fading_to = false;
+            light3color = light3newcolor;
+            light3_is_on = true;
+            for (int i = 0; i <= 3; i++)
+              {pwm.setPWM(11-i, 0, RGBWtable[4 * light3color + i]);}
+            
+          }
+   
+      }
+      
   }
 
 
@@ -676,8 +810,10 @@ void fadetable_init() // create a look-up table that grows expoenentially from 1
       { float x = float (i) * 12 / tablesize;
         x = pow(2,x);
         fadetable[i] = int(x);
-        // Serial.println(fadetable[i]);
+        fadetotable[i] = map(i,0,tablesize - 1, 0, 4095);
       }
+    fadetable[tablesize - 1] = 4095;
+    fadetotable[tablesize - 1] = 4095;
   }
 
 
