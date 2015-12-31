@@ -31,6 +31,11 @@ def run_test_arduino(args):
        "Low": arduino.low,
        "Med": arduino.med,
        "High": arduino.high,
+       "FadeSlow": arduino.fade_slow,
+       "FadeFaster": arduino.fade_faster,
+       "FadeFastest": arduino.fade_fastest,
+
+
        # need
        "Set": arduino.set,
        "FadeTo": arduino.fade_to

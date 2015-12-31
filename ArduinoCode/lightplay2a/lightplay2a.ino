@@ -31,6 +31,10 @@ int light1newcolor = 0; // target color for light 1 fade to
 int light2newcolor = 0; // target color for light 2 fade to
 int light3newcolor = 0; // target color for light 3 fade to
 
+int light1power = 1; // power divisor for light 1
+int light2power = 1; // power divisor for light 2
+int light3power = 1; // power divisor for light 3
+
 // for storing the light_is_on? states  of the three lights
 boolean light1_is_on = false; //
 boolean light2_is_on = false; //
@@ -129,9 +133,9 @@ void loop()
       {
         incomingByte = Serial.read();
         dispatch(incomingByte);
-        digitalWrite(13, HIGH);
-        delay(20); // set timing of single event loop; delay also eliminates effects of sensor bounce
-        digitalWrite(13, LOW);
+        // digitalWrite(13, HIGH);
+        delay(5); // set timing of single event loop; delay also eliminates effects of sensor bounce
+        // digitalWrite(13, LOW);
       }
       
      // threshold = analogRead(1); // dynamically set threshold
@@ -189,17 +193,53 @@ void dispatch(byte incomingByte)
 
               case 5:
                 // set brightness low
-                // not yet implemented
+                if ((xbits == 1) || (xbits == 0))
+                  {
+                    light1power = 4;
+                  }
+                if ((xbits == 2) || (xbits == 0))
+                  {
+                    light2power = 4;
+                  }
+                if ((xbits == 3) || (xbits == 0))
+                  {
+                    light3power = 4;
+                  }
+                lighton();                
                 break;
 
               case 6:
                 // set brightness medium
-                // not yet implemented                
+                if ((xbits == 1) || (xbits == 0))
+                  {
+                    light1power = 2;
+                  }
+                if ((xbits == 2) || (xbits == 0))
+                  {
+                    light2power = 2;
+                  }
+                if ((xbits == 3) || (xbits == 0))
+                  {
+                    light3power = 2;
+                  }
+                lighton();                               
                 break;
 
               case 7:
                 // set brightness high
-                // not yet implemented
+                if ((xbits == 1) || (xbits == 0))
+                  {
+                    light1power = 1;
+                  }
+                if ((xbits == 2) || (xbits == 0))
+                  {
+                    light2power = 1;
+                  }
+                if ((xbits == 3) || (xbits == 0))
+                  {
+                    light3power = 1;
+                  }
+                lighton();                  
                 break;
                 
             }
@@ -233,6 +273,7 @@ void dispatch(byte incomingByte)
                   }
                 break;
             }
+          break;
             
         case 4:
           // Serial.println("command 4 - motor commands");
@@ -287,21 +328,21 @@ void lighton()
     if ((xbits == 1) || (xbits == 0)) 
       {
         for (int i = 0; i <= 3; i++)
-          {pwm.setPWM(7-i, 0, RGBWtable[4 * light1color + i]);}
+          {pwm.setPWM(7-i, 0, (RGBWtable[4 * light1color + i])/light1power);}
         light1_is_on = true;
       }
        
     if ((xbits == 2) || (xbits == 0))
       {
         for (int i = 0; i <= 3; i++)
-          {pwm.setPWM(3 - i, 0, RGBWtable[4 * light2color + i]);}
+          {pwm.setPWM(3 - i, 0, (RGBWtable[4 * light2color + i])/light2power);}
         light2_is_on = true;
       }
             
     if ((xbits == 3) || (xbits == 0))
       {
         for (int i = 0; i <= 3; i++)
-          {pwm.setPWM(11 - i, 0, RGBWtable[4 * light3color + i]);}
+          {pwm.setPWM(11 - i, 0, (RGBWtable[4 * light3color + i])/light3power);}
         light3_is_on = true;
       }      
   }
@@ -338,7 +379,7 @@ void lighttoggle()
       for (int i = 0; i <= 3; i++)
         {
           if (!light1_is_on)
-            {pwm.setPWM(7-i, 0, RGBWtable[4 * light1color + i]);}
+            {pwm.setPWM(7-i, 0, (RGBWtable[4 * light1color + i])/light1power);}
           else
             {pwm.setPWM(7-i, 0, 4096);}
         }
@@ -350,7 +391,7 @@ void lighttoggle()
         for (int i = 0; i <= 3; i++)
           {
             if (!light2_is_on)
-              {pwm.setPWM(3 - i, 0, RGBWtable[4 * light2color + i]);}
+              {pwm.setPWM(3 - i, 0, (RGBWtable[4 * light2color + i])/light2power);}
             else
               {pwm.setPWM(3 - i, 0, 4096);}
           }
@@ -362,7 +403,7 @@ void lighttoggle()
         for (int i = 0; i <= 3; i++)
           {
             if (!light3_is_on)
-              {pwm.setPWM(11 - i, 0, RGBWtable[4 * light3color + i]);}
+              {pwm.setPWM(11 - i, 0, (RGBWtable[4 * light3color + i])/light2power);}
             else
               {pwm.setPWM(11 - i, 0, 4096);}
           }
@@ -379,7 +420,7 @@ void lighttoggle()
         {
           light1color = ybits;
           for (int i = 0; i <= 3; i++)
-            {pwm.setPWM(7-i, 0, RGBWtable[4 * light1color + i]);}
+            {pwm.setPWM(7-i, 0, (RGBWtable[4 * light1color + i])/light1power);}
           light1_is_on = true;
         }
 
@@ -387,7 +428,7 @@ void lighttoggle()
        {
          light2color = ybits;
          for (int i = 0; i <= 3; i++)
-           {pwm.setPWM(3 - i, 0, RGBWtable[4 * light2color + i]);}
+           {pwm.setPWM(3 - i, 0, (RGBWtable[4 * light2color + i])/light2power);}
          light2_is_on = true;
        }
       
@@ -395,7 +436,7 @@ void lighttoggle()
        {
          light3color = ybits;
          for (int i = 0; i <= 3; i++)
-           {pwm.setPWM(11 - i, 0, RGBWtable[4 * light3color + i]);}
+           {pwm.setPWM(11 - i, 0, (RGBWtable[4 * light3color + i])/light3power);}
          light3_is_on = true;
        } 
       
@@ -494,7 +535,7 @@ void update_fades()
               {
                 int x = fadetable[ptr];
                 int y = RGBWtable[4 * light1color + i];
-                int z = map(x, 0, 4095, 0, y);
+                int z = (map(x, 0, 4095, 0, y))/light1power;
                 pwm.setPWM(7-i, 0, z);
               }
             
@@ -520,7 +561,7 @@ void update_fades()
               {
                 int x = fadetable[ptr];
                 int y = RGBWtable[4 * light1color + i];
-                int z = map(x, 0, 4095, 0, y);
+                int z = (map(x, 0, 4095, 0, y))/light1power;
                 pwm.setPWM(7-i, 0, z);
               }
           }
@@ -544,7 +585,7 @@ void update_fades()
                   {
                     int x = fadetable[ptr];
                     int y = RGBWtable[4 * light2color + i];
-                    int z = map(x, 0, 4095, 0, y);
+                    int z = (map(x, 0, 4095, 0, y))/light2power;
                     pwm.setPWM(3-i, 0, z);
                   }
                 
@@ -570,7 +611,7 @@ void update_fades()
               {
                 int x = fadetable[ptr];
                 int y = RGBWtable[4 * light2color + i];
-                int z = map(x, 0, 4095, 0, y);
+                int z = (map(x, 0, 4095, 0, y))/light2power;
                 pwm.setPWM(3-i, 0, z);
               }
           }
@@ -594,7 +635,7 @@ void update_fades()
                   {
                     int x = fadetable[ptr];
                     int y = RGBWtable[4 * light3color + i];
-                    int z = map(x, 0, 4095, 0, y);
+                    int z = (map(x, 0, 4095, 0, y))/light3power;
                     pwm.setPWM(11-i, 0, z);
                   }
                 
@@ -620,7 +661,7 @@ void update_fades()
               {
                 int x = fadetable[ptr];
                 int y = RGBWtable[4 * light3color + i];
-                int z = map(x, 0, 4095, 0, y);
+                int z = (map(x, 0, 4095, 0, y))/light3power;
                 pwm.setPWM(11-i, 0, z);
               }
           }
@@ -645,7 +686,7 @@ void update_fades()
                 int ystop = RGBWtable[4 * light1newcolor + i];
                 if (ystop != ystart)
                   {
-                    int z = map(x, 0, 4095, ystart, ystop);
+                    int z = (map(x, 0, 4095, ystart, ystop))/light1power;
                     pwm.setPWM(7-i, 0, z);
                   }
               }         
@@ -656,7 +697,7 @@ void update_fades()
             light1color = light1newcolor;
             light1_is_on = true;
             for (int i = 0; i <= 3; i++)
-              {pwm.setPWM(7-i, 0, RGBWtable[4 * light1color + i]);}
+              {pwm.setPWM(7-i, 0, (RGBWtable[4 * light1color + i])/light1power);}
             
           }
    
@@ -675,7 +716,7 @@ void update_fades()
                 int ystop = RGBWtable[4 * light2newcolor + i];
                 if (ystop != ystart)
                   {
-                    int z = map(x, 0, 4095, ystart, ystop);
+                    int z = (map(x, 0, 4095, ystart, ystop))/light2power;
                     pwm.setPWM(3-i, 0, z);
                   }
               }         
@@ -686,7 +727,7 @@ void update_fades()
             light2color = light2newcolor;
             light2_is_on = true;
             for (int i = 0; i <= 3; i++)
-              {pwm.setPWM(3-i, 0, RGBWtable[4 * light2color + i]);}
+              {pwm.setPWM(3-i, 0, (RGBWtable[4 * light2color + i])/light2power);}
             
           }
    
@@ -705,7 +746,7 @@ void update_fades()
                 int ystop = RGBWtable[4 * light3newcolor + i];
                 if (ystop != ystart)
                   {
-                    int z = map(x, 0, 4095, ystart, ystop);
+                    int z = (map(x, 0, 4095, ystart, ystop))/light3power;
                     pwm.setPWM(11-i, 0, z);
                   }
               }         
@@ -716,7 +757,7 @@ void update_fades()
             light3color = light3newcolor;
             light3_is_on = true;
             for (int i = 0; i <= 3; i++)
-              {pwm.setPWM(11-i, 0, RGBWtable[4 * light3color + i]);}
+              {pwm.setPWM(11-i, 0, (RGBWtable[4 * light3color + i])/light3power);}
             
           }
    

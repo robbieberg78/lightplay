@@ -216,10 +216,6 @@ class LightPlayer(SensingDevice):
    MOTOR = 4
 
 
-   class Other(object):
-      SET_FADE_LOW = 0
-      SET_FADE_MED = 1
-      SET_FADE_HIGH= 2
    class Color(object):
       RED = 0
       ORANGE = 1
@@ -241,6 +237,9 @@ class LightPlayer(SensingDevice):
       FADE_IN = 2
       FADE_OUT = 3
       TOGGLE = 4
+      POWER_LOW = 5
+      POWER_MED = 6
+      POWER_HIGH= 7
 
    class MotorCommand(object):
       ON = 0
@@ -323,6 +322,7 @@ class LightPlayer(SensingDevice):
       return self.write(LightPlayer.LIGHT, channel, LightPlayer.LightCommand.FADE_IN)
 
    def fade_slow(self, channel):
+      print "FADE SET SLOW"
       return self.write(LightPlayer.OTHER, LightPlayer.Speed.SLOW, 0)
 
    def fade_faster(self, channel):
@@ -333,19 +333,19 @@ class LightPlayer(SensingDevice):
 
    def low(self, channel):
       if self.isLight(channel):
-         return self.fade_slow(channel)
+         return self.write(LightPlayer.LIGHT, channel, LightPlayer.LightCommand.POWER_LOW)
       else:
          return self.write(LightPlayer.MOTOR, 0, LightPlayer.MotorCommand.SET_LOW)
 
    def med(self, channel):
       if self.isLight(channel):
-         return self.fade_faster(channel)
+         return self.write(LightPlayer.LIGHT, channel, LightPlayer.LightCommand.POWER_MED)
       else:
          return self.write(LightPlayer.MOTOR, 0, LightPlayer.MotorCommand.SET_MED)
 
    def high(self, channel):
       if self.isLight(channel):
-         return self.fade_fastest(channel)
+         return self.write(LightPlayer.LIGHT, channel, LightPlayer.LightCommand.POWER_HIGH)
       else:
          return self.write(LightPlayer.MOTOR, 0, LightPlayer.MotorCommand.SET_HIGH)
 
