@@ -244,39 +244,9 @@ void dispatch(byte incomingByte)
                 
             }
           break;
+        
         case 1:
-          // Serial.println("command 1 - set color to");
-          setlightcolor();
-          break;
-        case 2:
-          // Serial.println("command 2 - fade color to");
-          fadeto();
-          break;
-        case 3:
-          // Serial.println("command 3 - other/extension light commands");
-          switch(ybits)
-            {
-              case 0:
-                switch(xbits)
-                  {
-                    case 0:
-                      tfade = 10000;
-                      break;
-
-                    case 1:
-                      tfade = 5000;
-                      break;
-
-                    case 2:
-                      tfade = 1000;
-                      break;
-                  }
-                break;
-            }
-          break;
-            
-        case 4:
-          // Serial.println("command 4 - motor commands");
+          // Serial.println("command 1 - motor commands");
           switch(ybits)
             {
               case 0:
@@ -317,7 +287,38 @@ void dispatch(byte incomingByte)
                 break;
             } 
           break;
+        
+        case 2:
+          // Serial.println("command 2 - fade color to");
+          fadeto();
+          break;
+        case 3:
+          // Serial.println("command 3 - other/extension light commands");
+          switch(ybits)
+            {
+              case 0:
+                switch(xbits)
+                  {
+                    case 0:
+                      tfade = 10000;
+                      break;
 
+                    case 1:
+                      tfade = 5000;
+                      break;
+
+                    case 2:
+                      tfade = 1000;
+                      break;
+                  }
+                break;
+            }
+          break;
+
+        case 4:
+          // Serial.println("command 4 - set color to");
+          setlightcolor();
+          break;
        
       }
   }

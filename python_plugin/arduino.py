@@ -210,10 +210,11 @@ class MidiDevice(SensingDevice):
 
 class LightPlayer(SensingDevice):
    LIGHT = 0
-   SET = 1
+   MOTOR = 1
    FADE_TO = 2
    OTHER = 3
-   MOTOR = 4
+   SET = 4   
+
 
 
    class Color(object):
