@@ -285,7 +285,7 @@
             ['w', 'toggle motor', 'send_motor_toggle'],
             ['w', 'set motor speed %m.speeds', 'set_speed', "slow"],
             // Sensor cmds
-            ['h', 'when %m.sensors', 'poll_sensor', "sensor clips are connected"]
+            ['h', 'when %m.sensors', 'poll_sensor', "sensor wires are connected"]
             //            ['R', 'Value of %m.sensors', 'poll', "Sensor A"]
         ],
 
@@ -295,7 +295,7 @@
             colors: ['red', 'orange', 'yellow', 'green', 'blue', 'purple', 'white', 'surprise'],
             lights: ["all lights", "light 1", "light 2", "light 3"],
             speeds: ["slow", "faster", "fastest"],
-            sensors: ["sensor clips are connected", "sensor clips are disconnected", "light shines on sensor", "shadow falls on sensor"]
+            sensors: ["sensor wires are connected"]
         }
     };
 

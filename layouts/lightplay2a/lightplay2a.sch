@@ -13003,7 +13003,7 @@ In this library the device names are the same as the pin names of the symbols, t
 <part name="+3V6" library="supply1" deviceset="+3V3" device=""/>
 <part name="GND31" library="supply1" deviceset="GND" device=""/>
 <part name="C7" library="resistor" deviceset="C-US" device="C1206" value="0.33 uF"/>
-<part name="C8" library="resistor" deviceset="C-US" device="C0805" value="0.1uF"/>
+<part name="C8" library="resistor" deviceset="C-US" device="C0805" value="TDB"/>
 <part name="GND32" library="supply1" deviceset="GND" device=""/>
 <part name="C2" library="resistor" deviceset="C-US" device="C0805" value="0.1uF"/>
 <part name="C3" library="resistor" deviceset="C-US" device="C0805" value="0.1uF"/>
