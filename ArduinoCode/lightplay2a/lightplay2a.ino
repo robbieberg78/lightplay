@@ -496,6 +496,7 @@ void fadeout()
 
 void fadeto()
   {
+     if (ybits == 7) {ybits = random(7);}
      if (((xbits == 1) || (xbits == 0)) && light1_is_fading_to == false)
        { 
          t1start = millis();
