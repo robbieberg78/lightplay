@@ -707,7 +707,7 @@ void update_fades()
 
     if (light2_is_fading_to)
       {
-        t2 = millis() - t1start;
+        t2 = millis() - t2start;
         ptr = int(tablesize * t2 / tfade);
         if (ptr <= tablesize - 1)
           {
