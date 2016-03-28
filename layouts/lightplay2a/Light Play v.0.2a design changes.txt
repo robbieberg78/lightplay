@@ -1,0 +1,20 @@
+design changes
+ - fix bug in dc/dc converter part - check
+
+- switch to 5 W resistors - check
+
+- add ground planes and bypass caps; pay attention to routing of high current lines - check
+
+- remove led indicator -check
+
+- switch pwm control to LED driver channel - check
+
+- put 0.47 uncap across motor - check
+
+- add 3.3 V regulator - check
+
+test bluetooth - check
+
+- move mounting holes to give sufficient clearance.. - check
+
+- test dc/dc converter - check

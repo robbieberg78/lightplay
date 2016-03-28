@@ -316,7 +316,7 @@ void dispatch(byte incomingByte)
 
               case 5: //set motorspeed faster
                // pwm.setPWM(motore, 0, 1200); // this is the correct way to initialize motor duty cycle to 100%
-                motorspeed = 6;
+                motorspeed = 7;
                 break;
 
               case 6: //set motorspeed fastest
