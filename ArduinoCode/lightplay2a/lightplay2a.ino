@@ -13,9 +13,11 @@ int motore = 12; //enable line on the L293D motor driver is run by LED12 line on
 int leddriver_enable = 2;
 
 
-int motorspeed = 255;
+int motorspeed = 10;
 boolean motor_is_on = false; // 
 boolean thisway = true;  // direction state
+boolean motora_alt = false; // remember if digital state has been temporarily altered for speed control
+boolean motorb_alt = false; // remember if digital state has been temporarily altered for speed control
 
 // color code: 0 = red, 1 = orange, 2 = yellow, 3 = green, 4 = blue, 5 = violet, 6 = white, 7 = surprise
 
@@ -25,6 +27,8 @@ int RGBWtable[28] = {4095,0,0,0,2800,1200,0,0,2100,1900,0,0,0,4095,0,0,0,0,4095,
 int light1color = 6; // set current color of light 1 to white
 int light2color = 6; // set current color of light 2 to white
 int light3color = 6; // set current color of light 3 to white
+
+int lastsurprise = 0;
 
 
 int light1newcolor = 0; // target color for light 1 fade to
@@ -142,7 +146,38 @@ void loop()
     check_for_sensor_edge(); //check for sensor edge
     update_fades();
    
-    delay(10); // set timing of single event loop; delay also eliminates effects of sensor bounce
+    //delay(10); // set timing of single event loop; delay also eliminates effects of sensor bounce
+    if (motorspeed < 10)
+      {
+        if (digitalRead(motora))
+          {
+            motora_alt = true;
+            digitalWrite(motora,LOW);
+          }
+        if (digitalRead(motorb))
+          {
+            motorb_alt = true;
+            digitalWrite(motorb,LOW);
+          }
+        delay(10 - motorspeed);
+        if (motora_alt)
+          {
+            motora_alt = false;
+            digitalWrite(motora,HIGH);
+          }
+        if (motorb_alt)
+          {
+            motorb_alt = false;
+            digitalWrite(motorb,HIGH);
+          }
+        delay(motorspeed);
+       
+      }
+
+    else
+      {
+        delay(10);
+      }
   }
 
 void dispatch(byte incomingByte)
@@ -275,15 +310,18 @@ void dispatch(byte incomingByte)
 
               case 4: //set motorspeed slow
            
-                pwm.setPWM(motore, 0, 200); // this is the correct way to initialize motor duty cycle to 100%
+                // pwm.setPWM(motore, 0, 200); // this is the correct way to initialize motor duty cycle to 100%
+                motorspeed = 3;
                 break;
 
               case 5: //set motorspeed faster
-                pwm.setPWM(motore, 0, 1200); // this is the correct way to initialize motor duty cycle to 100%
+               // pwm.setPWM(motore, 0, 1200); // this is the correct way to initialize motor duty cycle to 100%
+                motorspeed = 6;
                 break;
 
               case 6: //set motorspeed fastest
-                pwm.setPWM(motore, 4096, 0); // this is the correct way to initialize motor duty cycle to 100%
+               // pwm.setPWM(motore, 4096, 0); // this is the correct way to initialize motor duty cycle to 100%
+                motorspeed = 10;
                 break;
             } 
           break;
@@ -415,7 +453,14 @@ void lighttoggle()
 
   void setlightcolor() // set color to, xbits contains which light, ybits contains which color
     {
-      if (ybits == 7) {ybits = random(7);}
+      if (ybits == 7) 
+        {ybits = random(7);
+        while (ybits == lastsurprise)
+          {
+            ybits = random(7);
+          }
+          lastsurprise = ybits;
+        }
 
       if ((xbits == 1) || (xbits == 0))
         {
@@ -496,7 +541,14 @@ void fadeout()
 
 void fadeto()
   {
-     if (ybits == 7) {ybits = random(7);}
+      if (ybits == 7) 
+        {ybits = random(7);
+        while (ybits == lastsurprise)
+          {
+            ybits = random(7);
+          }
+          lastsurprise = ybits;
+        }
      if (((xbits == 1) || (xbits == 0)) && light1_is_fading_to == false)
        { 
          t1start = millis();
