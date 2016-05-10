@@ -1,14 +1,10 @@
 #include <Wire.h>
 #include <Adafruit_PWMServoDriver.h>
 
-void setlightcolor(bool transform=true);
-
 byte incomingByte = 0;  // for incoming serial data
 byte command =0; //3 MSBs of incomingByte used to store high level command
 byte xbits = 0; //two middle bits used for which light, etc,
 byte ybits = 0; //3 LSBs used for which color or subommand
-byte rgb[3];
-
 
 // arduino pins
 int motora = 4;
@@ -90,7 +86,6 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver(0x40);
 
 void setup()
   {
-    memset(rgb, 0, sizeof(rgb));
     // initially set L293 inputs LOW, but with chip enabled
     pinMode(13, OUTPUT);
     pinMode(motora, OUTPUT);
@@ -355,11 +350,6 @@ void dispatch(byte incomingByte)
                       break;
                   }
                 break;
-                
-              case 1:
-                Serial.readBytes(rgb, 3);
-                setlightcolor(false);
-                break;                 
             }
           break;
 
@@ -461,7 +451,7 @@ void lighttoggle()
     
   }
 
-  void setlightcolor(bool transform) // set color to, xbits contains which light, ybits contains which color
+  void setlightcolor() // set color to, xbits contains which light, ybits contains which color
     {
       if (ybits == 7) 
         {ybits = random(7);
@@ -471,50 +461,32 @@ void lighttoggle()
           }
           lastsurprise = ybits;
         }
-      if(!transform){
-        getPWMColor();  
-      }
+
       if ((xbits == 1) || (xbits == 0))
         {
-          if(transform){
-            light1color = ybits;
-          }
+          light1color = ybits;
           for (int i = 0; i <= 3; i++)
-            {pwm.setPWM(7-i, 0, transform ? (RGBWtable[4 * light1color + i])/light1power : rgb[i]);}
+            {pwm.setPWM(7-i, 0, (RGBWtable[4 * light1color + i])/light1power);}
           light1_is_on = true;
         }
 
      if ((xbits == 2) || (xbits == 0))
        {
-         if(transform){
-            light2color = ybits;
-         }
+         light2color = ybits;
          for (int i = 0; i <= 3; i++)
-           {pwm.setPWM(3 - i, 0, transform ? (RGBWtable[4 * light2color + i])/light2power : rgb[i]);}
+           {pwm.setPWM(3 - i, 0, (RGBWtable[4 * light2color + i])/light2power);}
          light2_is_on = true;
        }
       
      if ((xbits == 3) || (xbits == 0))
        {
-         if(transform){
-            light3color = ybits;
-         }
+         light3color = ybits;
          for (int i = 0; i <= 3; i++)
-           {pwm.setPWM(11 - i, 0, transform ? (RGBWtable[4 * light3color + i])/light3power : rgb[i]);}
+           {pwm.setPWM(11 - i, 0, (RGBWtable[4 * light3color + i])/light3power);}
          light3_is_on = true;
        } 
       
   }
-
-void getPWMColor(){
-    float adjR = (rgb[0]/255.0) * 4095;
-    float adjG = (rgb[1]/255.0) * 4095;
-    float adjB = (rgb[2]/255.0) * 4095;
-    float scale = (adjR + adjG + adjB) / 4095.0;
-    rgb[0] = (int)(adjR/scale);
-    rgb[1] = (int)(adjG/scale);
-    rgb[2] = (int)(adjB/scale);
-}
 
 void fadein()
   {
