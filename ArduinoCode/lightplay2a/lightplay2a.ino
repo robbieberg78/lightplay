@@ -7,7 +7,7 @@ byte incomingByte = 0;  // for incoming serial data
 byte command =0; //3 MSBs of incomingByte used to store high level command
 byte xbits = 0; //two middle bits used for which light, etc,
 byte ybits = 0; //3 LSBs used for which color or subommand
-byte rgb[3];
+byte rgb[4];
 
 
 // arduino pins
@@ -514,6 +514,8 @@ void getPWMColor(){
     rgb[0] = (int)(adjR/scale);
     rgb[1] = (int)(adjG/scale);
     rgb[2] = (int)(adjB/scale);
+    rgb[3] = 0;
+    
 }
 
 void fadein()
