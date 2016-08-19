@@ -126,6 +126,8 @@ void setup()
     // so setting TWBR to 2 would raise clock speed to max allowable of 400 kHz
     // but 200 kHz is fast enough. With 1 k pullups on a breadboard, the clock signal looks ok on scope, no need to go faster though
     bootflash(); // flash all the lights
+    // autothreshold();
+    pwm.setPWM(0, 4096, 0); // 100% duty cycle
      
     
     
@@ -178,6 +180,7 @@ void loop()
       {
         delay(10);
       }
+  
   }
 
 void dispatch(byte incomingByte)
@@ -350,6 +353,10 @@ void dispatch(byte incomingByte)
                       break;
                   }
                 break;
+
+                case 1:
+                  autothreshold();
+                  break;
             }
           break;
 
@@ -827,12 +834,19 @@ void check_for_sensor_edge() // check for sensor edge
       {
         Serial.write(0);
         digitalWrite(13, HIGH);   // turn the LED on (HIGH is the voltage level)
+        
+   
         delay(10);              // wait for a second
-        digitalWrite(13, LOW); 
+        digitalWrite(13, LOW);
+  
+        
       }
 //    if ((newsensor != oldsensor) && (newsensor == false))
 //      {
 //        Serial.write(1);
+//        digitalWrite(13, HIGH);   // turn the LED on (HIGH is the voltage level)
+//        delay(10);              // wait for a second
+//        digitalWrite(13, LOW);
 //      }
     oldsensor = newsensor;
   }
@@ -898,6 +912,36 @@ void bootflash()
         pwm.setPWM(i, 0, 4096); //0% duty cycle 
       }
   }
+
+
+  
+void autothreshold()
+  {
+    digitalWrite(13, HIGH);   // turn the LED on (HIGH is the voltage level)
+    int lightmax = 0;
+    int lightmin = 1023;
+    int lightval = analogRead(0);
+    for (int i = 0; i < 100; i++)
+      {
+      delay(50); //
+      lightval = analogRead(0);
+      if (lightval > lightmax)
+        {
+          lightmax = lightval;
+        }
+          if (lightval < lightmin)
+        {
+          lightmin = lightval;
+        }
+     
+      }
+    
+    threshold = lightmin + (lightmax - lightmin)/2;
+    digitalWrite(13, LOW);   // turn the LED on (HIGH is the voltage level)
+     
+  }
+
+
 
 void fadetable_init() // create a look-up table that grows expoenentially from 1 to 4095
   {

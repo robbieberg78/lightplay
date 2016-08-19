@@ -126,6 +126,10 @@ void setup()
     // so setting TWBR to 2 would raise clock speed to max allowable of 400 kHz
     // but 200 kHz is fast enough. With 1 k pullups on a breadboard, the clock signal looks ok on scope, no need to go faster though
     bootflash(); // flash all the lights
+    digitalWrite(13, HIGH);   // turn the LED on (HIGH is the voltage level)
+    delay(100);              // wait for 1/10 second
+    digitalWrite(13, LOW);
+   autothreshold();
      
     
     
@@ -178,6 +182,7 @@ void loop()
       {
         delay(10);
       }
+
   }
 
 void dispatch(byte incomingByte)
@@ -822,12 +827,13 @@ void update_fades()
 
 void check_for_sensor_edge() // check for sensor edge 
   {
-    newsensor = (analogRead(0) < threshold);
+    newsensor = (analogRead(1) < threshold);
     if ((newsensor != oldsensor) && (newsensor == true))
+    
       {
         Serial.write(0);
         digitalWrite(13, HIGH);   // turn the LED on (HIGH is the voltage level)
-        delay(10);              // wait for a second
+        delay(100);              // wait for 1/10 second
         digitalWrite(13, LOW); 
       }
 //    if ((newsensor != oldsensor) && (newsensor == false))
@@ -894,7 +900,7 @@ void bootflash()
     for (int i = 0; i <= 11; i++)
       {
         pwm.setPWM(i, 4096, 0); // 100% duty cycle 
-        delay(500); // bootflash
+        delay(100); // bootflash
         pwm.setPWM(i, 0, 4096); //0% duty cycle 
       }
   }
@@ -910,6 +916,14 @@ void fadetable_init() // create a look-up table that grows expoenentially from 1
     fadetable[tablesize - 1] = 4095;
     fadetotable[tablesize - 1] = 4095;
   }
+
+void  autothreshold()
+  {
+        pwm.setPWM(3, 4096, 0); // 100% duty cycle 
+        delay(10000); // bootflash
+        pwm.setPWM(3, 0, 4096); //0% duty cycle 
+  }
+  
 
 
 

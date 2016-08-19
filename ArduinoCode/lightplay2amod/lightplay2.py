@@ -20,12 +20,11 @@ def soak():
 def tx(n):
     s.write(chr(n)) # send Arduino a byte,
     #Arduino will respond by sending 3 bytes (ubits, xbits,ybits)
-    time.sleep(0.2)  # give buffer time to fill
-    while True: 
-        x = s.readline()
-        if x:
-            print(x)
-        time.sleep(0.02)
+    time.sleep(0.2)  # give Arduino time to respond 
+    x = s.readline()
+    if x:
+        print(x)
+
 
 
 def surprise():
@@ -57,6 +56,28 @@ def motoroff():
 
 def reverse():
     s.write(chr(130))
+
+def toggle():
+    s.write(chr(131))
+
+def slow():
+    s.write(chr(132))
+
+def faster():
+    s.write(chr(133))
+
+def fastest():
+    s.write(chr(134))
+
+def test():
+    while True:
+        slow()
+        time.sleep(5.0)
+        faster()
+        time.sleep(5.0)        
+        fastest()
+        time.sleep(5.0)
+    
 
 def setcolor(n):
     s.write(chr(32 + n))
