@@ -894,7 +894,7 @@ void bootflash()
     for (int i = 0; i <= 11; i++)
       {
         pwm.setPWM(i, 4096, 0); // 100% duty cycle 
-        delay(500); // bootflash
+        delay(100); // bootflash
         pwm.setPWM(i, 0, 4096); //0% duty cycle 
       }
   }
