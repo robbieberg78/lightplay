@@ -172,6 +172,7 @@ void dispatch(byte incomingByte)
                 }
               }    
             }
+          break;
                  
         case 1:
           // Serial.println("command 1 - motor commands");
