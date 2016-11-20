@@ -208,6 +208,11 @@ void fadeout(){
 }
 
 void setbrightness(){
+   while (Serial.available() < 1)
+    {
+    digitalWrite(13, HIGH);   // turn the LED on (HIGH is the voltage level)
+    }
+  digitalWrite(13, LOW);   // turn the LED on (HIGH is the voltage level)    
   for(int l=1;l<4;l++){
     if ((xbits == l) || (xbits == 0)) {
       lights[l].power = Serial.read();
@@ -218,6 +223,11 @@ void setbrightness(){
 }
 
 void setfadespeed(){
+   while (Serial.available() < 1)
+    {
+    digitalWrite(13, HIGH);   // turn the LED on (HIGH is the voltage level)
+    }
+  digitalWrite(13, LOW);   // turn the LED on (HIGH is the voltage level)    
   int x = Serial.read();
   tfade = x * tfade;
 }
