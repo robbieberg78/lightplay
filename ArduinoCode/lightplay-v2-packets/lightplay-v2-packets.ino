@@ -178,7 +178,7 @@ void dispatch(byte incomingByte)
            resetstate();
            break;
          case 1:
-           stopall();
+           stopfades();
            break;
          
           
@@ -310,14 +310,9 @@ void resetstate(){
   tfade = 1000;  
 }
 
-void stopall(){
+void stopfades(){
   motoroff();
   for(int l=1;l<4;l++){
-    for (int i = 0; i <= 3; i++){pwm.setPWM(pwmchan[l]-i, 0, 4096);}
-    lights[l].redval = 0;
-    lights[l].greenval = 0;
-    lights[l].blueval = 0;
-    lights[l].whiteval = 0;
     lights[l].is_fading = false;
   } 
 }
