@@ -1,12 +1,11 @@
- #include <Servo.h>
-
+#include <Servo.h>
 #include <Wire.h>
 #include <Adafruit_PWMServoDriver.h>
 
 byte incomingByte = 0;  // for incoming serial data
 byte command =0; //3 MSBs of incomingByte used to store high level command
-byte xbits = 0; //two middle bits used for which light, etc,
-byte ybits = 0; //3 LSBs used for which color or subommand
+byte xbits = 0; //two middle bits used for which light
+byte ybits = 0; //3 LSBs used for which subommand
 
 // arduino pins
 int motora = 4;
@@ -15,19 +14,11 @@ int motore = 12; //enable line on the L293D motor driver is run by LED12 line on
 int leddriver_enable = 2;
 
 int motorspeed = 10;
-boolean motor_is_on = false; // 
-boolean thisway = true;  // direction state
 boolean motora_alt = false; // remember if digital state has been temporarily altered for speed control
 boolean motorb_alt = false; // remember if digital state has been temporarily altered for speed control
 
-// color code: 0 = red, 1 = orange, 2 = yellow, 3 = green, 4 = blue, 5 = violet, 6 = white, 7 = surprise
-
-//int RGBWtable[32] = {4095,0,0,0,2800,1200,0,0,2100,1900,0,0,0,4095,0,0,0,0,4095,0,2000,0,3000,0,0,0,0,4095,0,0,0,0};
-// this table contains the RGBW values for colors 0-6, in order.
-
-int pwmchan[] = {0,7,3,11};
-int powerlevels[] = {9,3,1};
-byte packet[8];
+int pwmchan[] = {0,7,3,11}; // this mapps which cluster of LED drover outputs go to which light  
+byte packet[8]; // this is where the incoming RGBW bytes are buffered
  
  typedef struct {
   int redval = 0;
@@ -38,21 +29,13 @@ byte packet[8];
   int newgreenval = 0;
   int newblueval = 0;  
   int newwhiteval = 0;
-  int power = 1;
+  int power = 1; 
   boolean is_fading = false;  
   unsigned long tstart = 0;
   unsigned long t;
 } Light;
 
-
 Light lights[3];
-
-int lastsurprise = 0;
-
-// for edge detection
-boolean oldsensor = false;
-boolean newsensor = false;
-int threshold = 512;
 
 const int tablesize = 200;
 int fadetable[tablesize];
@@ -78,8 +61,6 @@ void setup() {
     randomSeed(analogRead(A2));
     pinMode(leddriver_enable, OUTPUT);
     digitalWrite(leddriver_enable, LOW); // enable LED driver
-  
-    oldsensor = analogRead(0);
     
     Serial.begin(9600);
     pwm.begin();
@@ -101,8 +82,6 @@ void setup() {
     // so setting TWBR to 2 would raise clock speed to max allowable of 400 kHz
     // but 200 kHz is fast enough. With 1 k pullups on a breadboard, the clock signal looks ok on scope, no need to go faster though
     bootflash(); // flash all the lights
-   // setlightcolor();
-
 }
 
 void loop() {
@@ -151,7 +130,7 @@ void dispatch(byte incomingByte)
     command = (incomingByte & 0xe0) >> 5; // bitwise + shift  selects bits 5-7, which are used to store high level command
     xbits = (incomingByte & 0x18) >> 3; // bits 3 and 4 used to select which light
     ybits = incomingByte & 0x07; // bits 0-2 select which subcommand or which color 
-    if (command == 1)
+    if (command == 1) // motor commands
       {switch(ybits)
         {case 0:
           onthisway();
@@ -169,7 +148,7 @@ void dispatch(byte incomingByte)
         
       }
       
-    if (command == 2)
+    if (command == 2) // light commands
       {switch(ybits)
         {case 0:
           setlightcolor();
@@ -306,8 +285,8 @@ void setfadespeed(){
     digitalWrite(13, HIGH);   // turn the LED on (HIGH is the voltage level)
     }
   digitalWrite(13, LOW);   // turn the LED on (HIGH is the voltage level)    
-  int x = Serial.read();
-  tfade = x * tfade;
+  int x = Serial.read(); // x stores fade speed in seconds
+  tfade = x * 1000; 
 }
 
 void update_fades()
@@ -346,7 +325,6 @@ void update_fades()
           }
     }          
   }
-
 
 void bootflash()
   {
