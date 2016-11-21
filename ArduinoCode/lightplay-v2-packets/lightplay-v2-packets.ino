@@ -35,7 +35,7 @@ byte packet[8]; // this is where the incoming RGBW bytes are buffered
   unsigned long t;
 } Light;
 
-Light lights[3];
+Light lights[4];
 
 const int tablesize = 200;
 int fadetable[tablesize];

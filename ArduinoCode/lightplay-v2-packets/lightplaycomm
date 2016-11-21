@@ -1,20 +1,23 @@
-Some sample packet communication codes
+HW.lpCmd(4,0,2)
+
+
+iOS.sendmessage(HW.lpid, "148,136")  - setlight2 blue , setlight1 red 
+
 
 iOS.sendmessage(HW.lpid, "1")  - all lights off
 
-iOS.sendmessage(HW.lpid, "64,15,0,0,0,0,0,0,0") - setallred
 
+iOS.sendmessage(HW.lpid, "64,15,0,0,0,0,0,0,0") - setallred
 iOS.sendmessage(HW.lpid, "66,15,0,0,0,0,0,0,0") - fadeallred
 
-iOS.sendmessage(HW.lpid, "72,15,0,0,0,0,0,0,0") - set light1 red
+iOS.sendmessage(HW.lpid, "72,15,0,0,0,0,0,0,0") - 1red
+
+
 
 iOS.sendmessage(HW.lpid, "64,0,0,15,0,0,0,0,0") - setallgreen
-
 iOS.sendmessage(HW.lpid, "66,0,0,15,0,0,0,0,0") - fadeallgreen
 
 iOS.sendmessage(HW.lpid, "64,0,0,0,0,15,0,0,0") - setallblue
-
-iOS.sendmessage(HW.lpid, "64,7,0,0,0,8,0,0,0”) - setallpurple
 
 iOS.sendmessage(HW.lpid, "64,0,0,0,0,0,0,15,0") -set allwhite
 
@@ -32,15 +35,13 @@ iOS.sendmessage(HW.lpid, "69,5") -   setfadespeed 5 s
 
 iOS.sendmessage(HW.lpid, "67") - all fadeout
 
-iOS.sendmessage(HW.lpid, “32”) - onthisway
+iOS.sendmessage(HW.lpid, "32") - onthisway
+iOS.sendmessage(HW.lpid, "33") - onthatway
+iOS.sendmessage(HW.lpid, "34") - motoroff
+iOS.sendmessage(HW.lpid, "35,5") - setmotorspeed 50%
 
-iOS.sendmessage(HW.lpid, “33”) - onthatway
-
-iOS.sendmessage(HW.lpid, “34”) - motoroff
-
-iOS.sendmessage(HW.lpid, “35,5”) - set motorspeed 50%
-
-
+iOS.sendmessage(HW.lpid, "96") - reset state
+iOS.sendmessage(HW.lpid, "97") - stopfades
 
 
 

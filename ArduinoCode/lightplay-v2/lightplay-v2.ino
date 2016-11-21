@@ -40,7 +40,7 @@ typedef struct {
   unsigned long t;
 } Light;
 
-Light lights[3];
+Light lights[4];
 
 int lastsurprise = 0;
 
