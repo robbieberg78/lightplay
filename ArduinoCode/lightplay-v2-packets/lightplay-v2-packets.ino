@@ -123,7 +123,7 @@ void loop() {
       {
         delay(10);
       }
-    if((millis() % 100) == 0) {sendsensor();}
+    // if((millis() % 100) == 0) {sendsensor();}
 }
 
 void dispatch(byte incomingByte)
@@ -311,7 +311,6 @@ void resetstate(){
 }
 
 void stopfades(){
-  motoroff();
   for(int l=1;l<4;l++){
     lights[l].is_fading = false;
   } 
