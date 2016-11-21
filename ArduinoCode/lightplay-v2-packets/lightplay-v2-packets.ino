@@ -123,6 +123,7 @@ void loop() {
       {
         delay(10);
       }
+    sendsensor();
 }
 
 void dispatch(byte incomingByte)
@@ -169,6 +170,20 @@ void dispatch(byte incomingByte)
            setfadespeed();
            break;
         }
+      }
+
+    if (command == 3) // other commands
+      {switch(ybits)
+        {case 0:
+           resetstate();
+           break;
+         case 1:
+           stopall();
+           break;
+         
+          
+        }
+
       }
   }
 
@@ -289,6 +304,24 @@ void setfadespeed(){
   tfade = x * 1000; 
 }
 
+void resetstate(){
+  for(int l=1;l<4;l++){lights[l].power = 1;}
+  motorspeed = 10;
+  tfade = 1000;  
+}
+
+void stopall(){
+  motoroff();
+  for(int l=1;l<4;l++){
+    for (int i = 0; i <= 3; i++){pwm.setPWM(pwmchan[l]-i, 0, 4096);}
+    lights[l].redval = 0;
+    lights[l].greenval = 0;
+    lights[l].blueval = 0;
+    lights[l].whiteval = 0;
+    lights[l].is_fading = false;
+  } 
+}
+
 void update_fades()
   {
     for(int l=1;l<4;l++){
@@ -320,10 +353,19 @@ void update_fades()
               lights[l].redval = lights[l].newredval;
               lights[l].greenval = lights[l].newgreenval;
               lights[l].blueval = lights[l].newblueval;
-              lights[l].whiteval = lights[l].newwhiteval;            
+              lights[l].whiteval = lights[l].newwhiteval;
+              byte fadedone = 127 + l;
+              Serial.write(fadedone);           
               }
           }
     }          
+  }
+
+void sendsensor()
+  {
+    int x=analogRead(0);
+    x = x >> 3; // shift 7 MSBs  into position, high bit is clear
+    Serial.write(x);  
   }
 
 void bootflash()

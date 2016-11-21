@@ -14,6 +14,8 @@ iOS.sendmessage(HW.lpid, "66,0,0,15,0,0,0,0,0") - fadeallgreen
 
 iOS.sendmessage(HW.lpid, "64,0,0,0,0,15,0,0,0") - setallblue
 
+iOS.sendmessage(HW.lpid, "64,7,0,0,0,8,0,0,0”) - setallpurple
+
 iOS.sendmessage(HW.lpid, "64,0,0,0,0,0,0,15,0") -set allwhite
 
 iOS.sendmessage(HW.lpid, "64,0,0,0,0,0,0,0,0") - alloff
