@@ -123,7 +123,7 @@ void loop() {
       {
         delay(10);
       }
-    sendsensor();
+    if((millis() % 100) == 0) {sendsensor();}
 }
 
 void dispatch(byte incomingByte)
