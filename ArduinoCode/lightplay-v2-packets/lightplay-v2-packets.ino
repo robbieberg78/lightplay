@@ -113,6 +113,37 @@ void loop() {
         delay(5); // set timing of single event loop; delay also eliminates effects of sensor bounce
       }
     update_fades();
+    if (motorspeed < 10)
+      {
+        if (digitalRead(motora))
+          {
+            motora_alt = true;
+            digitalWrite(motora,LOW);
+          }
+        if (digitalRead(motorb))
+          {
+            motorb_alt = true;
+            digitalWrite(motorb,LOW);
+          }
+        delay(10 - motorspeed);
+        if (motora_alt)
+          {
+            motora_alt = false;
+            digitalWrite(motora,HIGH);
+          }
+        if (motorb_alt)
+          {
+            motorb_alt = false;
+            digitalWrite(motorb,HIGH);
+          }
+        delay(motorspeed);
+       
+      }
+
+    else
+      {
+        delay(10);
+      }
 }
 
 void dispatch(byte incomingByte)
@@ -120,6 +151,24 @@ void dispatch(byte incomingByte)
     command = (incomingByte & 0xe0) >> 5; // bitwise + shift  selects bits 5-7, which are used to store high level command
     xbits = (incomingByte & 0x18) >> 3; // bits 3 and 4 used to select which light
     ybits = incomingByte & 0x07; // bits 0-2 select which subcommand or which color 
+    if (command == 1)
+      {switch(ybits)
+        {case 0:
+          onthisway();
+          break;
+         case 1:
+           onthatway();
+           break;
+         case 2:
+           motoroff();
+           break;
+         case 3:
+           setmotorspeed();
+           break;       
+        }
+        
+      }
+      
     if (command == 2)
       {switch(ybits)
         {case 0:
@@ -152,6 +201,34 @@ void getPacket()
       }
     digitalWrite(13, LOW);   // turn the LED on (HIGH is the voltage level)
     Serial.readBytes(packet,8);
+  }
+
+void onthisway()
+  {
+    digitalWrite(motora, HIGH);
+    digitalWrite(motorb, LOW);
+  }
+
+void onthatway()
+  {
+    digitalWrite(motora, LOW);
+    digitalWrite(motorb, HIGH);    
+  }
+
+void motoroff()
+  {
+    digitalWrite(motora, LOW);
+    digitalWrite(motorb, LOW);    
+  }
+
+void setmotorspeed()
+  {
+   while (Serial.available() < 1)
+    {
+    digitalWrite(13, HIGH);   // turn the LED on (HIGH is the voltage level)
+    }
+  digitalWrite(13, LOW);   // turn the LED on (HIGH is the voltage level)    
+  motorspeed = Serial.read();    
   }
 
 void setlightcolor(){
@@ -212,10 +289,11 @@ void setbrightness(){
     {
     digitalWrite(13, HIGH);   // turn the LED on (HIGH is the voltage level)
     }
-  digitalWrite(13, LOW);   // turn the LED on (HIGH is the voltage level)    
+  digitalWrite(13, LOW);   // turn the LED on (HIGH is the voltage level)
+  int x = Serial.read();   // capture the power level
   for(int l=1;l<4;l++){
     if ((xbits == l) || (xbits == 0)) {
-      lights[l].power = Serial.read();
+      lights[l].power = x;
       int RGBWvals[] = {lights[l].redval,lights[l].greenval,lights[l].blueval,lights[l].whiteval};
        for (int i=0;i<=3;i++)pwm.setPWM(pwmchan[l]-i, 0, RGBWvals[i]/lights[l].power);
     }
