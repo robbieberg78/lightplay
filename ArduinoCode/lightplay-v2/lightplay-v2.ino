@@ -267,6 +267,14 @@ void lightoff(){
 }  
 
 void setlightcolor(){
+  if (ybits == 7) 
+  {ybits = random(7);
+  while (ybits == lastsurprise)
+    {
+      ybits = random(7);
+    }
+    lastsurprise = ybits;
+  }
   for(int l=1;l<4;l++){
     if ((xbits==l)||(xbits==0)) {
       lights[l].color = ybits;
@@ -289,6 +297,14 @@ void fadeout(){
 }
 
 void fadeto(){
+  if (ybits == 7) 
+  {ybits = random(7);
+  while (ybits == lastsurprise)
+    {
+      ybits = random(7);
+    }
+    lastsurprise = ybits;
+  }
   for(int l=1;l<4;l++){
     if ((xbits == l) || (xbits == 0)){ 
       lights[l].tstart = millis();
