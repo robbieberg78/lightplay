@@ -123,7 +123,7 @@ void loop() {
       {
         delay(10);
       }
-    // if((millis() % 100) == 0) {sendsensor();}
+    if((millis() % 100) == 0) {sendsensor();}
 }
 
 void dispatch(byte incomingByte)
@@ -348,8 +348,8 @@ void update_fades()
               lights[l].greenval = lights[l].newgreenval;
               lights[l].blueval = lights[l].newblueval;
               lights[l].whiteval = lights[l].newwhiteval;
-              // changing reporting protocol
-              byte fadedone = 127 + l;
+              // changing reporting protocol fade will be 1,2,3 >3 => sensor
+              byte fadedone = l;
               Serial.write(fadedone);           
               }
           }
@@ -359,8 +359,11 @@ void update_fades()
 void sendsensor()
   {
     int x=analogRead(0);
-    x = x >> 3; // shift 7 MSBs  into position, high bit is clear
-    Serial.write(x);  
+    x = map(x,0,1023,4,104);
+    Serial.write(x);
+    int x=analogRead(1);
+    map(x,0,1023,105,205);
+    Serial.write(x);      
   }
 
 void bootflash()
