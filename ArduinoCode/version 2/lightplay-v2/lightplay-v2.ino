@@ -348,6 +348,7 @@ void update_fades()
               lights[l].greenval = lights[l].newgreenval;
               lights[l].blueval = lights[l].newblueval;
               lights[l].whiteval = lights[l].newwhiteval;
+              // changing reporting protocol
               byte fadedone = 127 + l;
               Serial.write(fadedone);           
               }
