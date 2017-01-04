@@ -123,7 +123,7 @@ void loop() {
       {
         delay(10);
       }
-    if((millis() % 100) == 0) {sendsensor();}
+    if((millis() % 50) == 0) {sendsensor();} \\stream sensors at 20 Hz
 }
 
 void dispatch(byte incomingByte)
@@ -356,13 +356,13 @@ void update_fades()
     }          
   }
 
-void sendsensor()
+void sendsensor() // map sensor values to a range of 100 
   {
     int x=analogRead(0);
-    x = map(x,0,1023,4,104);
+    x = map(x,0,1023,4,104);  // when iPad receives a value from 4 to 104, subract 4 to get sensor0 value 
     Serial.write(x);
     int x=analogRead(1);
-    map(x,0,1023,105,205);
+    map(x,0,1023,105,205); // when iPad receives a value from 105 to 205, subract 105 to get sensor1 value 
     Serial.write(x);      
   }
 
