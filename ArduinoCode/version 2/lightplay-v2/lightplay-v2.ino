@@ -123,7 +123,7 @@ void loop() {
       {
         delay(10);
       }
-    if((millis() % 50) == 0) {sendsensor();} \\stream sensors at 20 Hz
+    if((millis() % 50) == 0) {sendsensor();} //stream sensors at 20 Hz
 }
 
 void dispatch(byte incomingByte)
@@ -348,8 +348,8 @@ void update_fades()
               lights[l].greenval = lights[l].newgreenval;
               lights[l].blueval = lights[l].newblueval;
               lights[l].whiteval = lights[l].newwhiteval;
-              // changing reporting protocol fade will be 1,2,3 >3 => sensor
-              byte fadedone = l;
+              // bytes 253,254,255 indicate fade done on channels 1,2,3
+              byte fadedone = 252 + l;
               Serial.write(fadedone);           
               }
           }
@@ -359,10 +359,10 @@ void update_fades()
 void sendsensor() // map sensor values to a range of 100 
   {
     int x=analogRead(0);
-    x = map(x,0,1023,4,104);  // when iPad receives a value from 4 to 104, subract 4 to get sensor0 value 
+    x = map(x,0,1023,0,100);  // when iPad receives a value from 0 to 100, that's sensor0 value 
     Serial.write(x);
-    int x=analogRead(1);
-    map(x,0,1023,105,205); // when iPad receives a value from 105 to 205, subract 105 to get sensor1 value 
+    x=analogRead(1);
+    map(x,0,1023,101,201); // when iPad receives a value from 101 to 201, subract 101 to get sensor1 value 
     Serial.write(x);      
   }
 
