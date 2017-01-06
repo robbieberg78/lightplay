@@ -123,7 +123,7 @@ void loop() {
       {
         delay(10);
       }
-    // if((millis() % 100) == 0) {sendsensor();}
+    if((millis() % 50) == 0) {sendsensor();} //stream sensors at 20 Hz
 }
 
 void dispatch(byte incomingByte)
@@ -348,18 +348,22 @@ void update_fades()
               lights[l].greenval = lights[l].newgreenval;
               lights[l].blueval = lights[l].newblueval;
               lights[l].whiteval = lights[l].newwhiteval;
-              byte fadedone = 127 + l;
+              // bytes 253,254,255 indicate fade done on channels 1,2,3
+              byte fadedone = 252 + l;
               Serial.write(fadedone);           
               }
           }
     }          
   }
 
-void sendsensor()
+void sendsensor() // map sensor values to a range of 100 
   {
     int x=analogRead(0);
-    x = x >> 3; // shift 7 MSBs  into position, high bit is clear
-    Serial.write(x);  
+    x = map(x,0,1023,0,100);  // when iPad receives a value from 0 to 100, that's sensor0 value 
+    Serial.write(x);
+    x=analogRead(1);
+    map(x,0,1023,101,201); // when iPad receives a value from 101 to 201, subract 101 to get sensor1 value 
+    Serial.write(x);      
   }
 
 void bootflash()
