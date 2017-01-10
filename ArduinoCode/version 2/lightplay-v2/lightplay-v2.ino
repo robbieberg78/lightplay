@@ -362,7 +362,7 @@ void sendsensor() // map sensor values to a range of 100
     x = map(x,0,1023,0,100);  // when iPad receives a value from 0 to 100, that's sensor0 value 
     Serial.write(x);
     x=analogRead(1);
-    map(x,0,1023,101,201); // when iPad receives a value from 101 to 201, subract 101 to get sensor1 value 
+    x=map(x,0,1023,101,201); // when iPad receives a value from 101 to 201, subract 101 to get sensor1 value 
     Serial.write(x);      
   }
 
