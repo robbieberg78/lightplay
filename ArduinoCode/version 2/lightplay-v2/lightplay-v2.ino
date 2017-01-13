@@ -17,7 +17,7 @@ int motorspeed = 10;
 boolean motora_alt = false; // remember if digital state has been temporarily altered for speed control
 boolean motorb_alt = false; // remember if digital state has been temporarily altered for speed control
 
-int pwmchan[] = {0,7,3,11}; // this mapps which cluster of LED drover outputs go to which light  
+int pwmchan[] = {0,7,3,11}; // this maps which cluster of LED drover outputs go to which light  
 byte packet[8]; // this is where the incoming RGBW bytes are buffered
  
  typedef struct {
@@ -30,7 +30,8 @@ byte packet[8]; // this is where the incoming RGBW bytes are buffered
   int newblueval = 0;  
   int newwhiteval = 0;
   int power = 1; 
-  boolean is_fading = false;  
+  boolean is_fading = false;
+  boolean expfade = false; // true if you want to use an exponential fade table on a light (use when that light is fading out or in)
   unsigned long tstart = 0;
   unsigned long t;
 } Light;
@@ -40,6 +41,7 @@ Light lights[4];
 const int tablesize = 200;
 int fadetable[tablesize];
 int fadetotable[tablesize];
+
 
 unsigned long tfade = 1000;
 int ptr = 0;
@@ -261,6 +263,10 @@ void fadeto(){
       lights[l].newwhiteval = 256 * packet[6] + packet[7];  
       lights[l].tstart = millis();
       lights[l].is_fading = true;
+      if ((lights[l].redval == 0) && (lights[l].greenval == 0) && (lights[l].blueval == 0) && (lights[l].whiteval == 0))
+        {lights[l].expfade = true;}
+      else
+        {lights[l].expfade = false;}
     }
   }   
 }
@@ -274,6 +280,7 @@ void fadeout(){
       lights[l].newwhiteval = 0;  
       lights[l].tstart = millis();
       lights[l].is_fading = true;
+      lights[l].expfade = true;
     }
   }  
 }
@@ -317,7 +324,7 @@ void stopfades(){
 }
 
 void update_fades()
-  {
+  { int x=1;
     for(int l=1;l<4;l++){
             if (lights[l].is_fading)
           {
@@ -326,14 +333,26 @@ void update_fades()
             lights[l].t = millis() - lights[l].tstart;
             ptr = int(tablesize * lights[l].t / tfade);
             if (ptr <= tablesize - 1)
-              {         
+              {
                 for (int i = 0; i <= 3; i++)
                   {
-                    int x = fadetotable[ptr];
                     int ystart = RGBWvals[i];
                     int ystop = newRGBWvals[i];
                     if (ystop != ystart)
-                      {
+                      {if (lights[l].expfade)
+                          {if (ystart < ystop)
+                             {x = fadetable[ptr];}
+                           else
+                             {
+                              x = fadetable[tablesize - 1- ptr];
+                              int temp = ystart;
+                              ystart = ystop;
+                              ystop = temp;
+                             }
+                          
+                          }
+                        else
+                          {x = fadetotable[ptr];}
                         int z = (map(x, 0, 4095, ystart, ystop))/lights[l].power;
                         pwm.setPWM(pwmchan[l]-i, 0, z);
                       }
@@ -380,10 +399,13 @@ void fadetable_init() // create a look-up table that grows exponentially from 1 
   {
     for (int i = 0; i < tablesize; i++)
       { float x = float (i) * 12 / tablesize;
-        x = pow(2,x);
+        x = pow(2,x) + 2;
         fadetable[i] = int(x);
+        if (fadetable[i] > 4095)
+            {fadetable[i] = 4095;}
         fadetotable[i] = map(i,0,tablesize - 1, 0, 4095);
       }
+    fadetable[0] = 0;
     fadetable[tablesize - 1] = 4095;
     fadetotable[tablesize - 1] = 4095;
   }
