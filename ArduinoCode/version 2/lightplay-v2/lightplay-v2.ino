@@ -2,7 +2,7 @@
 #include <Wire.h>
 #include <Adafruit_PWMServoDriver.h>
 
-byte incomingByte = 0;  // for incoming serial data
+byte incomingByte = 0;  // for incoming serial data.
 byte command =0; //3 MSBs of incomingByte used to store high level command
 byte xbits = 0; //two middle bits used for which light
 byte ybits = 0; //3 LSBs used for which subommand
