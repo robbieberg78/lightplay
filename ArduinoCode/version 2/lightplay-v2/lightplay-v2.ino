@@ -319,8 +319,10 @@ void resetstate(){
 
 void stopfades(){
   for(int l=1;l<4;l++){
-    lights[l].is_fading = false;
-  } 
+     if ((xbits == l) || (xbits == 0)) {
+        lights[l].is_fading = false;
+     }
+   } 
 }
 
 void update_fades()
