@@ -29,6 +29,10 @@ byte packet[8]; // this is where the incoming RGBW bytes are buffered
   int newgreenval = 0;
   int newblueval = 0;  
   int newwhiteval = 0;
+  int intredval = 0;
+  int intgreenval = 0;
+  int intblueval = 0;  
+  int intwhiteval = 0;
   int power = 1; 
   boolean is_fading = false;
   boolean expfade = false; // true if you want to use an exponential fade table on a light (use when that light is fading out or in)
@@ -231,6 +235,8 @@ void setlightcolor(){
   getPacket();
   for(int l=1;l<4;l++){
     if ((xbits==l)||(xbits==0)) {
+      if (lights[l].is_fading)
+        {lights[l].is_fading = false;}
       lights[l].redval = 256 * packet[0] + packet[1];
       lights[l].greenval = 256 * packet[2] + packet[3];
       lights[l].blueval = 256 * packet[4] + packet[5];
@@ -243,6 +249,8 @@ void setlightcolor(){
 
 void lightoff(){
   for(int l=1;l<4;l++){
+    if (lights[l].is_fading)
+      {lights[l].is_fading = false;}
     if ((xbits == l) || (xbits == 0)) {
       for (int i = 0; i <= 3; i++){pwm.setPWM(pwmchan[l]-i, 0, 4096);}
     }
@@ -256,7 +264,14 @@ void lightoff(){
 void fadeto(){
   getPacket();
   for(int l=1;l<4;l++){
-    if ((xbits == l) || (xbits == 0)){ 
+    if ((xbits == l) || (xbits == 0)){
+      if (lights[l].is_fading)
+        {
+         lights[l].redval = lights[l].intredval;
+         lights[l].greenval = lights[l].intgreenval;
+         lights[l].blueval = lights[l].intblueval;
+         lights[l].whiteval = lights[l].intwhiteval;
+         }
       lights[l].newredval = 256 * packet[0] + packet[1];
       lights[l].newgreenval = 256 * packet[2] + packet[3];
       lights[l].newblueval = 256 * packet[4] + packet[5];
@@ -274,6 +289,13 @@ void fadeto(){
 void fadeout(){
   for(int l=1;l<4;l++){
     if ((xbits == l) || (xbits == 0)){
+      if (lights[l].is_fading)
+        {
+         lights[l].redval = lights[l].intredval;
+         lights[l].greenval = lights[l].intgreenval;
+         lights[l].blueval = lights[l].intblueval;
+         lights[l].whiteval = lights[l].intwhiteval;
+         }      
       lights[l].newredval = 0;
       lights[l].newgreenval = 0;
       lights[l].newblueval = 0;
@@ -356,6 +378,21 @@ void update_fades()
                         else
                           {x = fadetotable[ptr];}
                         int z = (map(x, 0, 4095, ystart, ystop))/lights[l].power;
+                        switch(i)
+                          {
+                            case 0:
+                              lights[l].intredval = z;
+                              break;
+                            case 1:
+                              lights[l].intgreenval = z;
+                              break;
+                            case 2:
+                              lights[l].intblueval = z;
+                              break;
+                            case 3:
+                              lights[l].intwhiteval = z;
+                              break;
+                          }
                         pwm.setPWM(pwmchan[l]-i, 0, z);
                       }
                   }         
