@@ -48,6 +48,7 @@ int fadetotable[tablesize];
 
 
 unsigned long tfade = 1000;
+unsigned long tloop = 0; // to keep track of time since last sendsensor
 int ptr = 0;
 
 // setup led_drivercalled this way, it uses the default address 0x40:
@@ -67,6 +68,7 @@ void setup() {
     randomSeed(analogRead(A2));
     pinMode(leddriver_enable, OUTPUT);
     digitalWrite(leddriver_enable, LOW); // enable LED driver
+    tloop = millis();
     
     Serial.begin(9600);
     pwm.begin();
@@ -129,7 +131,10 @@ void loop() {
       {
         delay(10);
       }
-    if((millis() % 50) == 0) {sendsensor();} //stream sensors at 20 Hz
+    if((millis() - tloop) > 50)  //stream sensors at 20 Hz
+      { tloop = millis();
+        sendsensor();
+      }
 }
 
 void dispatch(byte incomingByte)
@@ -235,10 +240,10 @@ void setlightcolor(){
   getPacket();
   for(int l=1;l<4;l++){
     if ((xbits==l)||(xbits==0)) {
-      if (lights[l].is_fading)
-        {lights[l].is_fading = false;
-        byte fadedone = 252 + l;
-        Serial.write(fadedone);}
+//      if (lights[l].is_fading)
+//        {lights[l].is_fading = false;
+//        byte fadedone = 252 + l;
+//        Serial.write(fadedone);}
       lights[l].redval = 256 * packet[0] + packet[1];
       lights[l].greenval = 256 * packet[2] + packet[3];
       lights[l].blueval = 256 * packet[4] + packet[5];
@@ -251,10 +256,10 @@ void setlightcolor(){
 
 void lightoff(){
   for(int l=1;l<4;l++){
-    if (lights[l].is_fading)
-      {lights[l].is_fading = false;
-      byte fadedone = 252 + l;
-      Serial.write(fadedone);}
+//    if (lights[l].is_fading)
+//      {lights[l].is_fading = false;
+//      byte fadedone = 252 + l;
+//      Serial.write(fadedone);}
     if ((xbits == l) || (xbits == 0)) {
       for (int i = 0; i <= 3; i++){pwm.setPWM(pwmchan[l]-i, 0, 4096);}
     }
@@ -275,8 +280,8 @@ void fadeto(){
          lights[l].greenval = lights[l].intgreenval;
          lights[l].blueval = lights[l].intblueval;
          lights[l].whiteval = lights[l].intwhiteval;
-         byte fadedone = 252 + l;
-         Serial.write(fadedone);
+//         byte fadedone = 252 + l;
+//         Serial.write(fadedone);
          }
       lights[l].newredval = 256 * packet[0] + packet[1];
       lights[l].newgreenval = 256 * packet[2] + packet[3];
@@ -301,8 +306,8 @@ void fadeout(){
          lights[l].greenval = lights[l].intgreenval;
          lights[l].blueval = lights[l].intblueval;
          lights[l].whiteval = lights[l].intwhiteval;
-         byte fadedone = 252 + l;
-         Serial.write(fadedone);
+//         byte fadedone = 252 + l;
+//         Serial.write(fadedone);
          }      
       lights[l].newredval = 0;
       lights[l].newgreenval = 0;
