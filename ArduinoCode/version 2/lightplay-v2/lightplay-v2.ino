@@ -1,6 +1,8 @@
 #include <Servo.h>
 #include <Wire.h>
 #include <Adafruit_PWMServoDriver.h>
+#define VERSION 0x21    // version 2.1
+//(version number is X.Y format with X given by high nibble and Y given by low nibble)
 
 byte incomingByte = 0;  // for incoming serial data.
 byte command =0; //3 MSBs of incomingByte used to store high level command
@@ -193,8 +195,8 @@ void dispatch(byte incomingByte)
            break;
          case 2: // send firmware version number
            if (xbits == 0)
-             {Serial.write(33);}  // version 2.1
-             //(version number is X.Y format with X given by high nibble and Y given by low nibble)
+             {Serial.write(VERSION+170);} 
+             //The response has to be in the 202-247 range because by the time the ipad sends the command the data is flowing from the sensors.       
            break;
          
           
