@@ -191,6 +191,11 @@ void dispatch(byte incomingByte)
          case 1:
            stopfades();
            break;
+         case 2: // send firmware version number
+           if (xbits == 0)
+             {Serial.write(33);}  // version 2.1
+             //(version number is X.Y format with X given by high nibble and Y given by low nibble)
+           break;
          
           
         }
@@ -240,10 +245,10 @@ void setlightcolor(){
   getPacket();
   for(int l=1;l<4;l++){
     if ((xbits==l)||(xbits==0)) {
-//      if (lights[l].is_fading)
-//        {lights[l].is_fading = false;
-//        byte fadedone = 252 + l;
-//        Serial.write(fadedone);}
+      if (lights[l].is_fading)
+        {lights[l].is_fading = false;
+        byte fadedone = 248 + l;
+        Serial.write(fadedone);}
       lights[l].redval = 256 * packet[0] + packet[1];
       lights[l].greenval = 256 * packet[2] + packet[3];
       lights[l].blueval = 256 * packet[4] + packet[5];
@@ -256,10 +261,10 @@ void setlightcolor(){
 
 void lightoff(){
   for(int l=1;l<4;l++){
-//    if (lights[l].is_fading)
-//      {lights[l].is_fading = false;
-//      byte fadedone = 252 + l;
-//      Serial.write(fadedone);}
+    if (lights[l].is_fading)
+      {lights[l].is_fading = false;
+      byte fadedone = 248 + l;
+      Serial.write(fadedone);}
     if ((xbits == l) || (xbits == 0)) {
       for (int i = 0; i <= 3; i++){pwm.setPWM(pwmchan[l]-i, 0, 4096);}
     }
@@ -280,8 +285,8 @@ void fadeto(){
          lights[l].greenval = lights[l].intgreenval;
          lights[l].blueval = lights[l].intblueval;
          lights[l].whiteval = lights[l].intwhiteval;
-//         byte fadedone = 252 + l;
-//         Serial.write(fadedone);
+         byte fadedone = 248 + l;
+         Serial.write(fadedone);
          }
       lights[l].newredval = 256 * packet[0] + packet[1];
       lights[l].newgreenval = 256 * packet[2] + packet[3];
@@ -306,8 +311,8 @@ void fadeout(){
          lights[l].greenval = lights[l].intgreenval;
          lights[l].blueval = lights[l].intblueval;
          lights[l].whiteval = lights[l].intwhiteval;
-//         byte fadedone = 252 + l;
-//         Serial.write(fadedone);
+         byte fadedone = 248 + l;
+         Serial.write(fadedone);
          }      
       lights[l].newredval = 0;
       lights[l].newgreenval = 0;
