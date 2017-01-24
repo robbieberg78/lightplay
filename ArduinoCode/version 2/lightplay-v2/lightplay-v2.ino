@@ -49,7 +49,7 @@ int fadetable[tablesize];
 int fadetotable[tablesize];
 
 
-unsigned long tfade = 1000;
+unsigned long tfade = 5000;
 unsigned long tloop = 0; // to keep track of time since last sendsensor
 int ptr = 0;
 
@@ -209,9 +209,9 @@ void getPacket()
   {
     while (Serial.available() < 8)
       {
-      digitalWrite(13, HIGH);   // turn the LED on (HIGH is the voltage level)
+      digitalWrite(13, LOW);   // nop
       }
-    digitalWrite(13, LOW);   // turn the LED on (HIGH is the voltage level)
+    
     Serial.readBytes(packet,8);
   }
 
@@ -237,9 +237,9 @@ void setmotorspeed()
   {
    while (Serial.available() < 1)
     {
-    digitalWrite(13, HIGH);   // turn the LED on (HIGH is the voltage level)
+    digitalWrite(13, LOW);   // nop
     }
-  digitalWrite(13, LOW);   // turn the LED on (HIGH is the voltage level)    
+     
   motorspeed = Serial.read();    
   }
 
@@ -267,13 +267,14 @@ void lightoff(){
       {lights[l].is_fading = false;
       byte fadedone = 248 + l;
       Serial.write(fadedone);}
-    if ((xbits == l) || (xbits == 0)) {
-      for (int i = 0; i <= 3; i++){pwm.setPWM(pwmchan[l]-i, 0, 4096);}
+    if ((xbits == l) || (xbits == 0))
+    {
+      for (int i = 0; i <= 3; i++){pwm.setPWM(pwmchan[l]-i, 0, 0);}
+      lights[l].redval = 0;
+      lights[l].greenval = 0;
+      lights[l].blueval = 0;
+      lights[l].whiteval = 0;
     }
-    lights[l].redval = 0;
-    lights[l].greenval = 0;
-    lights[l].blueval = 0;
-    lights[l].whiteval = 0;     
   }
 }
 
@@ -296,7 +297,7 @@ void fadeto(){
       lights[l].newwhiteval = 256 * packet[6] + packet[7];  
       lights[l].tstart = millis();
       lights[l].is_fading = true;
-      if ((lights[l].redval == 0) && (lights[l].greenval == 0) && (lights[l].blueval == 0) && (lights[l].whiteval == 0))
+      if ((lights[l].redval < 2000) && (lights[l].greenval < 2000) && (lights[l].blueval < 2000) && (lights[l].whiteval < 2000))
         {lights[l].expfade = true;}
       else
         {lights[l].expfade = false;}
@@ -330,9 +331,8 @@ void fadeout(){
 void setbrightness(){
    while (Serial.available() < 1)
     {
-    digitalWrite(13, HIGH);   // turn the LED on (HIGH is the voltage level)
+    digitalWrite(13, LOW);   // nop
     }
-  digitalWrite(13, LOW);   // turn the LED on (HIGH is the voltage level)
   int x = Serial.read();   // capture the power level
   for(int l=1;l<4;l++){
     if ((xbits == l) || (xbits == 0)) {
@@ -346,9 +346,9 @@ void setbrightness(){
 void setfadespeed(){
    while (Serial.available() < 1)
     {
-    digitalWrite(13, HIGH);   // turn the LED on (HIGH is the voltage level)
+    digitalWrite(13, LOW);   // nop
     }
-  digitalWrite(13, LOW);   // turn the LED on (HIGH is the voltage level)    
+ 
   int x = Serial.read(); // x stores fade speed in seconds
   tfade = x * 1000; 
 }
@@ -450,7 +450,7 @@ void bootflash()
       {
         pwm.setPWM(i, 4096, 0); // 100% duty cycle 
         delay(50); // bootflash
-        pwm.setPWM(i, 0, 4096); //0% duty cycle 
+        pwm.setPWM(i, 0, 0); //0% duty cycle 
       }
   }
 
