@@ -22,6 +22,7 @@ boolean motorb_alt = false; // remember if digital state has been temporarily al
 int pwmchan[] = {0,7,3,11}; // this maps which cluster of LED drover outputs go to which light  
 byte packet[8]; // this is where the incoming RGBW bytes are buffered
 int RGBWvals[4];
+int newRGBWvals[4];
  
  typedef struct {
   int redval = 0;
@@ -255,8 +256,15 @@ void setlightcolor(){
       lights[l].redval = 256 * packet[0] + packet[1];
       lights[l].greenval = 256 * packet[2] + packet[3];
       lights[l].blueval = 256 * packet[4] + packet[5];
-      lights[l].whiteval = 256 * packet[6] + packet[7];     
-      RGBWvals = {lights[l].redval,lights[l].greenval,lights[l].blueval,lights[l].whiteval};
+      lights[l].whiteval = 256 * packet[6] + packet[7];
+      lights[l].intredval = lights[l].redval;
+      lights[l].intgreenval = lights[l].greenval;
+      lights[l].intblueval = lights[l].blueval;
+      lights[l].intwhiteval = lights[l].whiteval;            
+      RGBWvals[0] = lights[l].redval;
+      RGBWvals[1] = lights[l].greenval;
+      RGBWvals[2] = lights[l].blueval;
+      RGBWvals[3] = lights[l].whiteval;
        for (int i=0;i<=3;i++)pwm.setPWM(pwmchan[l]-i, 0, RGBWvals[i]/lights[l].power);
     }
   }
@@ -275,6 +283,10 @@ void lightoff(){
       lights[l].greenval = 0;
       lights[l].blueval = 0;
       lights[l].whiteval = 0;
+      lights[l].intredval = 0;
+      lights[l].intgreenval = 0;
+      lights[l].intblueval = 0;
+      lights[l].intwhiteval = 0;      
     }
   }
 }
@@ -330,15 +342,19 @@ void fadeout(){
 }
 
 void setbrightness(){
+    int x;
    while (Serial.available() < 1)
     {
     digitalWrite(13, LOW);   // nop
     }
-  int x = Serial.read();   // capture the power level
+  x = Serial.read();   // capture the power level
   for(int l=1;l<4;l++){
     if ((xbits == l) || (xbits == 0)) {
       lights[l].power = x;
-      RGBWvals = {lights[l].redval,lights[l].greenval,lights[l].blueval,lights[l].whiteval};
+      RGBWvals[0] = lights[l].redval;
+      RGBWvals[1] = lights[l].greenval;
+      RGBWvals[2] = lights[l].blueval;
+      RGBWvals[3] = lights[l].whiteval;
        for (int i=0;i<=3;i++)pwm.setPWM(pwmchan[l]-i, 0, RGBWvals[i]/lights[l].power);
     }
   }
@@ -370,19 +386,29 @@ void stopfades(){
 
 void update_fades()
   { int x=1;
+    int ystart;
+    int ystop;
+    int z;
+    int temp;
     for(int l=1;l<4;l++){
             if (lights[l].is_fading)
           {
-            int RGBWvals[] = {lights[l].redval,lights[l].greenval,lights[l].blueval,lights[l].whiteval};
-            int newRGBWvals[] = {lights[l].newredval,lights[l].newgreenval,lights[l].newblueval,lights[l].newwhiteval};            
+             RGBWvals[0] = lights[l].redval;
+             RGBWvals[1] = lights[l].greenval;
+             RGBWvals[2] = lights[l].blueval;
+             RGBWvals[3] = lights[l].whiteval;
+             newRGBWvals[0] = lights[l].newredval;
+             newRGBWvals[1] = lights[l].newgreenval;
+             newRGBWvals[2] = lights[l].newblueval;
+             newRGBWvals[3] = lights[l].newwhiteval;
             lights[l].t = millis() - lights[l].tstart;
             ptr = int(tablesize * lights[l].t / tfade);
             if (ptr <= tablesize - 1)
               {
                 for (int i = 0; i <= 3; i++)
                   {
-                    int ystart = RGBWvals[i];
-                    int ystop = newRGBWvals[i];
+                    ystart = RGBWvals[i];
+                    ystop = newRGBWvals[i];
                     if (abs(ystop - ystart) > 10 )
                       {if (lights[l].expfade)
                           {if (ystart < ystop)
@@ -390,15 +416,14 @@ void update_fades()
                            else
                              {
                               x = fadetable[tablesize - 1- ptr];
-                              int temp = ystart;
+                              temp = ystart;
                               ystart = ystop;
                               ystop = temp;
-                             }
-                          
+                             }         
                           }
                         else
                           {x = fadetotable[ptr];}
-                        int z = (map(x, 0, 4095, ystart, ystop))/lights[l].power;
+                        z = (map(x, 0, 4095, ystart, ystop))/lights[l].power;
                         switch(i)
                           {
                             case 0:
