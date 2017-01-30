@@ -1,7 +1,7 @@
 #include <Servo.h>
 #include <Wire.h>
 #include <Adafruit_PWMServoDriver.h>
-#define VERSION 0x21    // version 2.1
+#define VERSION 0x22    // version 2.2
 //(version number is X.Y format with X given by high nibble and Y given by low nibble)
 
 byte incomingByte = 0;  // for incoming serial data.
